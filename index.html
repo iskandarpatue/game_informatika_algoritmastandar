@@ -1,0 +1,3402 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PESAWAT TEMPUR: Misi Algoritma Luar Angkasa</title>
+    <!-- Memuat Tailwind CSS untuk tata letak responsif & utilitas UI -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Memuat Google Fonts: Orbitron (Futuristik) & Plus Jakarta Sans (Keterbacaan) -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==========================================================================
+           BAGIAN 1: STYLE.CSS (Desain Visual, Tema Galaksi, dan Animasi)
+           ========================================================================== */
+        :root {
+            --bg-space: #060919;
+            --cyan-glow: #00f2fe;
+            --purple-nebula: #7c3aed;
+            --amber-warn: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-space);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #f8fafc;
+        }
+
+        .font-orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* Efek Kaca Futuristik (Glassmorphism) */
+        .space-panel {
+            background: rgba(15, 23, 42, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            box-shadow: 0 0 35px rgba(0, 242, 254, 0.15), inset 0 0 20px rgba(56, 189, 248, 0.08);
+        }
+
+        .space-card {
+            background: rgba(30, 41, 59, 0.75);
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Tombol Interaktif Game */
+        .btn-cyber {
+            background: linear-gradient(135deg, #0284c7 0%, #4f46e5 100%);
+            border: 1px solid #38bdf8;
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.35);
+            transition: all 0.2s ease;
+        }
+        .btn-cyber:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 22px rgba(56, 189, 248, 0.6);
+            filter: brightness(1.12);
+        }
+        .btn-cyber:active:not(:disabled) {
+            transform: translateY(0);
+        }
+        .btn-cyber:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            filter: grayscale(0.6);
+        }
+
+        /* Opsi Jawaban Kuis */
+        .option-btn {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1.5px solid rgba(56, 189, 248, 0.3);
+            transition: all 0.18s ease;
+            text-align: left;
+        }
+        .option-btn:hover:not(:disabled) {
+            background: rgba(30, 58, 138, 0.6);
+            border-color: #38bdf8;
+            transform: translateX(4px);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
+        }
+        .option-btn.correct {
+            background: rgba(6, 95, 70, 0.85) !important;
+            border-color: #34d399 !important;
+            box-shadow: 0 0 20px rgba(52, 211, 153, 0.4) !important;
+        }
+        .option-btn.wrong {
+            background: rgba(127, 29, 29, 0.85) !important;
+            border-color: #f87171 !important;
+            box-shadow: 0 0 20px rgba(248, 113, 113, 0.4) !important;
+        }
+
+        /* Proteksi Anti-Copy pada Area Soal */
+        .no-copy {
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+        }
+
+        /* Animasi Kotak Misi & Peluncuran */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        .animate-float {
+            animation: floatSlow 3.5s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 12px rgba(56, 189, 248, 0.4); }
+            50% { box-shadow: 0 0 26px rgba(56, 189, 248, 0.85); }
+        }
+        .glow-pulse {
+            animation: pulseGlow 2s infinite;
+        }
+
+        /* Custom Scrollbar untuk Panel Modal */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(56, 189, 248, 0.4);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(56, 189, 248, 0.7);
+        }
+
+        /* Cetak Hasil (Print Stylesheet) */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #screen-result, #screen-result * {
+                visibility: visible;
+            }
+            #screen-result {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: auto;
+                background: white !important;
+                color: black !important;
+                overflow: visible !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="relative w-full h-full select-none overflow-hidden">
+
+    <!-- ==========================================================================
+         CANVAS UTAMA PERMAINAN LUAR ANGKASA
+         ========================================================================== -->
+    <canvas id="gameCanvas" class="absolute inset-0 w-full h-full block z-0"></canvas>
+
+    <!-- ==========================================================================
+         HUD (HEADS-UP DISPLAY) SAAT BERMAIN
+         ========================================================================== -->
+    <header id="hud-container" class="hidden absolute top-0 left-0 right-0 z-20 p-2 sm:p-3 pointer-events-none">
+        <div class="max-w-7xl mx-auto flex flex-col gap-2">
+            <!-- Baris Atas HUD: Identitas, Skor, dan Kontrol -->
+            <div class="space-panel rounded-xl px-3 py-2 flex flex-wrap items-center justify-between gap-2 pointer-events-auto">
+                <!-- Info Pilot -->
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-sky-500/20 border border-sky-400/50 flex items-center justify-center text-sky-300 font-orbitron font-bold text-sm">
+                        🚀
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span id="hud-name" class="font-bold text-white text-sm sm:text-base tracking-wide">PILOT</span>
+                            <span id="hud-mode-badge" class="text-[10px] font-orbitron px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/40">PENILAIAN</span>
+                        </div>
+                        <div class="text-xs text-slate-300 flex items-center gap-2">
+                            <span id="hud-class">Kelas: X-A</span>
+                            <span>•</span>
+                            <span id="hud-absen">Absen: 01</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistik Misi & Skor -->
+                <div class="flex items-center gap-3 sm:gap-6">
+                    <div class="text-center">
+                        <div class="text-[10px] uppercase tracking-wider text-sky-300 font-orbitron">Progres Misi</div>
+                        <div id="hud-progress-text" class="font-orbitron font-bold text-sm sm:text-lg text-white">0 / 15</div>
+                    </div>
+                    <div class="h-7 w-[1px] bg-slate-700"></div>
+                    <div class="text-center">
+                        <div class="text-[10px] uppercase tracking-wider text-emerald-300 font-orbitron">Skor Saat Ini</div>
+                        <div class="font-orbitron font-bold text-sm sm:text-lg text-emerald-400"><span id="hud-score">0</span> <span class="text-xs text-slate-400">/ 150</span></div>
+                    </div>
+                    <div class="h-7 w-[1px] bg-slate-700 hidden md:block"></div>
+                    <div class="hidden md:block text-center">
+                        <div class="text-[10px] uppercase tracking-wider text-purple-300 font-orbitron">Sistem Senjata Aktif</div>
+                        <div id="hud-weapon-name" class="text-xs font-bold text-cyan-300">Lv.1 Crimson Twin-Laser</div>
+                    </div>
+                </div>
+
+                <!-- Tombol Aksi Cepat (BGM, Suara Efek, Layar Penuh, Jeda) -->
+                <div class="flex items-center gap-1.5 sm:gap-2">
+                    <button id="btn-bgm" onclick="AudioFX.toggleBGM()" title="Musik Latar (BGM)" class="px-2.5 py-2 rounded-lg bg-indigo-900/90 hover:bg-indigo-800 border border-indigo-400/60 text-indigo-200 text-xs font-orbitron font-bold transition flex items-center gap-1">
+                        <span id="bgm-icon">🎵</span> <span class="hidden sm:inline text-[10px]">BGM ON</span>
+                    </button>
+                    <button id="btn-sound" onclick="AudioFX.toggleMute()" title="Efek Suara (SFX)" class="p-2 rounded-lg bg-slate-800/90 hover:bg-slate-700 border border-slate-600 text-sky-300 text-xs sm:text-sm transition">
+                        🔊
+                    </button>
+                    <button id="btn-fullscreen" onclick="GameApp.toggleFullscreen()" title="Mode Layar Penuh" class="p-2 rounded-lg bg-slate-800/90 hover:bg-slate-700 border border-slate-600 text-sky-300 text-xs sm:text-sm transition">
+                        ⛶ <span class="hidden lg:inline text-xs ml-1">Layar Penuh</span>
+                    </button>
+                    <button id="btn-pause" onclick="GameApp.togglePause()" class="px-3 py-2 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/50 text-amber-200 font-orbitron text-xs font-bold transition">
+                        ⏸ JEDA
+                    </button>
+                </div>
+            </div>
+
+            <!-- Baris Kedua HUD: 15 Indikator Misi Visual & Radar Jarak -->
+            <div class="space-panel rounded-xl px-3 py-1.5 flex flex-wrap items-center justify-between gap-2 pointer-events-auto">
+                <div class="flex items-center gap-1.5 flex-wrap" id="hud-mission-icons">
+                    <!-- 15 ikon di-render secara dinamis oleh JS -->
+                </div>
+                <div class="flex items-center gap-2 text-xs text-sky-200 font-medium ml-auto">
+                    <span id="hud-status-hint" class="animate-pulse">📡 Kemudikan pesawat menuju Kotak Misi bercahaya!</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==========================================================================
+         KONTROL VIRTUAL JOYSTICK ANALOG (UNTUK HANDPHONE & PID / LAYAR SENTUH)
+         ========================================================================== -->
+    <div id="touch-controls" class="hidden fixed bottom-4 left-4 right-4 z-20 flex justify-between items-end pointer-events-none">
+        <!-- Analog Joystick Kiri (Mendukung Touch HP & Pointer/Mouse pada PID) -->
+        <div class="flex flex-col items-center gap-1.5 pointer-events-auto">
+            <div id="joystick-zone" class="relative w-32 h-32 sm:w-36 sm:h-36 rounded-full bg-slate-900/75 border-2 border-sky-400/50 shadow-[0_0_25px_rgba(56,189,248,0.25)] flex items-center justify-center touch-none select-none">
+                <!-- Garis Radar Joystick -->
+                <div class="absolute inset-3 rounded-full border border-dashed border-sky-400/30 pointer-events-none"></div>
+                <div class="absolute w-full h-[1px] bg-sky-400/20 pointer-events-none"></div>
+                <div class="absolute h-full w-[1px] bg-sky-400/20 pointer-events-none"></div>
+                <!-- Knob Joystick yang dapat digeser -->
+                <div id="joystick-knob" class="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-sky-400 to-indigo-600 border-2 border-white shadow-lg shadow-sky-400/50 flex items-center justify-center text-white font-orbitron font-bold text-xs pointer-events-none transition-transform duration-75">
+                    ✥
+                </div>
+            </div>
+            <span class="text-[10px] font-orbitron text-sky-300 bg-slate-900/80 px-2.5 py-0.5 rounded-full border border-sky-500/30">
+                JOYSTICK (HP / PID)
+            </span>
+        </div>
+
+        <!-- Tombol Tembak Peluru Beragam (Kanan) -->
+        <div class="flex flex-col items-center gap-1.5 pointer-events-auto">
+            <button id="btn-touch-fire" class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-br from-rose-500 via-amber-500 to-orange-600 border-3 border-amber-200 shadow-[0_0_30px_rgba(244,63,94,0.5)] flex flex-col items-center justify-center active:scale-90 transition touch-none select-none">
+                <span class="text-2xl sm:text-3xl">🔥</span>
+                <span class="text-[10px] sm:text-xs font-orbitron font-black text-white tracking-wider mt-0.5">TEMBAK</span>
+                <span id="btn-fire-sub" class="text-[9px] font-semibold text-amber-100">Auto-Cannon</span>
+            </button>
+            <span class="text-[10px] font-orbitron text-amber-300 bg-slate-900/80 px-2.5 py-0.5 rounded-full border border-amber-500/30">
+                TEKAN / TAHAN
+            </span>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         HALAMAN 1: IDENTITAS & PEMBUKA PERMAINAN (START SCREEN)
+         ========================================================================== -->
+    <section id="screen-start" class="relative z-30 w-full h-full flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+        <div class="space-panel rounded-2xl max-w-4xl w-full p-5 sm:p-8 my-auto border border-sky-400/40 shadow-2xl">
+            
+            <!-- Header Judul & Ilustrasi Pesawat Sukhoi -->
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6 pb-6 border-b border-slate-700/80">
+                <div class="text-center md:text-left flex-1">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/15 border border-sky-400/40 text-sky-300 text-xs font-semibold mb-2">
+                        <span>✈️ SUKHOI FLANKER EDITION • KELAS X</span>
+                        <span>•</span>
+                        <span>ALGORITMA STANDAR</span>
+                    </div>
+                    <h1 class="font-orbitron font-black text-2xl sm:text-4xl text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-cyan-200 to-indigo-300 tracking-wider">
+                        PESAWAT TEMPUR
+                    </h1>
+                    <p class="font-orbitron text-sm sm:text-lg text-amber-400 font-bold tracking-widest mt-0.5">
+                        MISI ALGORITMA LUAR ANGKASA
+                    </p>
+                    <p class="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed">
+                        Kendalikan jet tempur militer <strong>Sukhoi Su-35/Su-57</strong> menggunakan <strong>Joystick Virtual (HP & PID)</strong> atau Keyboard. Setiap naik soal, peluru tempur otomatis berevolusi dengan warna baru!
+                    </p>
+                </div>
+
+                <!-- Ilustrasi SVG Pesawat Tempur Militer Sukhoi (Twin-Engine, Canards, Swept Wings) -->
+                <div class="w-40 h-36 sm:w-48 sm:h-40 flex items-center justify-center relative animate-float shrink-0">
+                    <div class="absolute inset-0 rounded-full bg-sky-500/20 blur-2xl"></div>
+                    <svg viewBox="0 0 240 160" class="w-full h-full drop-shadow-[0_0_18px_rgba(56,189,248,0.65)]">
+                        <!-- Twin Afterburner Flames (Dua Mesin Sukhoi) -->
+                        <polygon points="8,62 38,57 38,69 8,66 0,63" fill="#f97316" />
+                        <polygon points="14,63 38,60 38,66 14,65" fill="#fef08a" />
+                        <polygon points="8,98 38,91 38,103 8,94 0,97" fill="#f97316" />
+                        <polygon points="14,97 38,94 38,100 14,95" fill="#fef08a" />
+                        <!-- Stabilizer Ekor Horizontal (Elevons) -->
+                        <polygon points="35,54 18,32 45,36 68,58" fill="#334155" stroke="#64748b" stroke-width="1.5"/>
+                        <polygon points="35,106 18,128 45,124 68,102" fill="#334155" stroke="#64748b" stroke-width="1.5"/>
+                        <!-- Sayap Utama Swept-Back Khas Sukhoi -->
+                        <polygon points="62,56 48,10 88,16 142,60" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/>
+                        <polygon points="62,104 48,150 88,144 142,100" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/>
+                        <!-- Corak Kamuflase Militer Sukhoi pada Sayap -->
+                        <polygon points="68,45 60,20 82,23 108,52" fill="#0284c7" opacity="0.65"/>
+                        <polygon points="68,115 60,140 82,137 108,108" fill="#0284c7" opacity="0.65"/>
+                        <!-- Canard Depan (Sayap Kecil Manuver Sukhoi Su-35) -->
+                        <polygon points="135,62 122,40 142,44 160,65" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+                        <polygon points="135,98 122,120 142,116 160,95" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+                        <!-- Dua Nosel Mesin Kembar (Twin Exhaust Nozzles) -->
+                        <rect x="34" y="56" width="16" height="13" rx="3" fill="#0f172a" stroke="#94a3b8" stroke-width="1.5"/>
+                        <rect x="34" y="91" width="16" height="13" rx="3" fill="#0f172a" stroke="#94a3b8" stroke-width="1.5"/>
+                        <!-- Badan Utama Fuselage & Hidung Radome -->
+                        <polygon points="46,54 155,58 228,80 155,102 46,106 54,80" fill="#334155" stroke="#bae6fd" stroke-width="2"/>
+                        <!-- Punggung Fuselage & Radome Hidung -->
+                        <polygon points="70,66 165,66 228,80 165,94 70,94" fill="#1e3a8a"/>
+                        <polygon points="188,71 228,80 188,89" fill="#0f172a"/>
+                        <!-- Sirip Ekor Kembar (Twin Vertical Stabilizers) -->
+                        <polygon points="48,58 32,42 75,48 85,60" fill="#0284c7" stroke="#7dd3fc" stroke-width="1.5"/>
+                        <polygon points="48,102 32,118 75,112 85,100" fill="#0284c7" stroke="#7dd3fc" stroke-width="1.5"/>
+                        <!-- Kanopi Kaca Kokpit -->
+                        <ellipse cx="148" cy="80" rx="28" ry="9" fill="#38bdf8" stroke="#e0f2fe" stroke-width="1.5"/>
+                        <ellipse cx="154" cy="77" rx="15" ry="3.5" fill="#ffffff" opacity="0.75"/>
+                        <!-- Rudal Wingtip (R-73 Air-to-Air Missiles) -->
+                        <rect x="44" y="7" width="46" height="4" rx="2" fill="#f43f5e"/>
+                        <rect x="44" y="149" width="46" height="4" rx="2" fill="#f43f5e"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Konten Utama: Formulir Identitas (Kiri) & Petunjuk Misi (Kanan) -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
+                
+                <!-- Kolom Kiri: Formulir Identitas Murid -->
+                <div class="lg:col-span-6 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h2 class="font-orbitron font-bold text-base sm:text-lg text-sky-300 flex items-center gap-2">
+                            <span>🧑‍🚀</span> IDENTITAS PILOT (WAJIB)
+                        </h2>
+                        <span id="active-mode-indicator" class="text-xs px-2.5 py-1 rounded-md bg-amber-500/20 border border-amber-400/50 text-amber-300 font-semibold">
+                            🛡️ Mode Penilaian Aktif
+                        </span>
+                    </div>
+
+                    <!-- Pesan Error Validasi -->
+                    <div id="form-error" class="hidden p-3 rounded-xl bg-rose-950/90 border border-rose-500 text-rose-200 text-xs font-medium">
+                        ⚠️ Harap lengkapi Nama Lengkap, Nomor Absen, dan Kelas sebelum memulai misi!
+                    </div>
+
+                    <div>
+                        <label for="input-name" class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
+                            1. Nama Lengkap Murid <span class="text-rose-400">*</span>
+                        </label>
+                        <input type="text" id="input-name" placeholder="Contoh: Budi Santoso" autocomplete="off"
+                            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/90 border border-slate-600 focus:border-sky-400 focus:outline-none text-white text-sm select-text" />
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label for="input-absen" class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
+                                2. Nomor Absen <span class="text-rose-400">*</span>
+                            </label>
+                            <input type="number" id="input-absen" min="1" max="60" placeholder="Contoh: 12"
+                                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/90 border border-slate-600 focus:border-sky-400 focus:outline-none text-white text-sm select-text" />
+                        </div>
+                        <div>
+                            <label for="input-class" class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
+                                3. Pilih Kelas <span class="text-rose-400">*</span>
+                            </label>
+                            <select id="input-class"
+                                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/90 border border-slate-600 focus:border-sky-400 focus:outline-none text-white text-sm">
+                                <option value="">-- Pilih Kelas --</option>
+                                <option value="X - A">X - A</option>
+                                <option value="X - B">X - B</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Opsi Layar Penuh & Musik Latar saat Mulai -->
+                    <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+                        <label class="flex items-center gap-2 cursor-pointer text-xs text-slate-300">
+                            <input type="checkbox" id="check-auto-fullscreen" checked class="w-4 h-4 rounded accent-sky-500">
+                            <span>Aktifkan <strong>Mode Layar Penuh</strong></span>
+                        </label>
+                        <button type="button" onclick="AudioFX.previewBGMFromLobby()" id="btn-lobby-bgm"
+                            class="px-3 py-1 rounded-lg bg-indigo-500/20 hover:bg-indigo-500/35 border border-indigo-400/50 text-indigo-200 text-xs font-orbitron font-semibold transition flex items-center gap-1.5">
+                            <span>🎧</span> <span id="lobby-bgm-text">Tes Musik Game (BGM)</span>
+                        </button>
+                    </div>
+
+                    <!-- Tombol Mulai Misi -->
+                    <div class="pt-2 flex flex-col sm:flex-row gap-2.5">
+                        <button onclick="GameApp.startMission()" class="btn-cyber flex-1 py-3.5 px-6 rounded-xl font-orbitron font-bold text-sm sm:text-base text-white tracking-wider flex items-center justify-center gap-2">
+                            <span>🚀</span> MULAI MISI SEKARANG
+                        </button>
+                    </div>
+
+                    <!-- Tombol Pengaturan Guru & Dokumentasi -->
+                    <div class="pt-2 flex items-center justify-between text-xs text-slate-400 border-t border-slate-800">
+                        <button onclick="GameApp.openTeacherModal()" class="hover:text-sky-300 underline flex items-center gap-1">
+                            ⚙️ Pengaturan Guru (Kelas & Mode)
+                        </button>
+                        <button onclick="GameApp.openDocsModal()" class="hover:text-amber-300 underline flex items-center gap-1">
+                            📘 Petunjuk Teknis & Daftar Uji
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Kolom Kanan: Petunjuk Singkat & Aturan Keamanan -->
+                <div class="lg:col-span-6 space-y-3">
+                    <div class="space-card rounded-xl p-4 space-y-2.5">
+                        <h3 class="font-orbitron font-bold text-xs sm:text-sm text-amber-300 flex items-center gap-2">
+                            <span>🎮</span> PETUNJUK MISI & 3 TIPE SOAL LITERASI
+                        </h3>
+                        <ul class="text-xs text-slate-200 space-y-1.5 leading-relaxed">
+                            <li class="flex items-start gap-2">
+                                <span class="text-sky-400 font-bold">▸</span>
+                                <span><strong>Kendali Multi-Perangkat:</strong> Gunakan <strong>Joystick Virtual di layar</strong> (cocok untuk Handphone & layar sentuh <strong>PID</strong>) atau tombol <strong>WASD / Panah + Spasi</strong> di keyboard.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-sky-400 font-bold">▸</span>
+                                <span><strong>Evolusi Peluru:</strong> Setiap berpindah soal (1–15), peluru pesawat Sukhoi otomatis berganti warna dan pola tembakan!</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-amber-400 font-bold">▸</span>
+                                <span><strong>Struktur 15 Soal Literasi:</strong>
+                                    <br>• <strong>Soal 1–5:</strong> Pilihan Ganda (Opsi A – E, pilih 1 jawaban).
+                                    <br>• <strong>Soal 6–10:</strong> Benar / Salah (3 pernyataan per soal).
+                                    <br>• <strong>Soal 11–15:</strong> Pilihan Ganda Kompleks (Opsi A – E, pilih maksimal 3 jawaban).
+                                </span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-emerald-400 font-bold">▸</span>
+                                <span><strong>Sistem Poin & Waktu:</strong> Waktu <strong>45 detik</strong>/soal. Jawaban tepat = <strong>+10 Poin</strong> | Belum tepat / Waktu Habis = <strong>0 Poin</strong> (Maksimal: <strong>150 Poin</strong>).</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Panel Peringatan Integritas Pengerjaan -->
+                    <div class="rounded-xl p-3.5 bg-amber-950/40 border border-amber-500/40 text-xs text-amber-200/90 space-y-1">
+                        <div class="font-orbitron font-bold text-amber-300 flex items-center gap-1.5">
+                            <span>🛡️</span> PENGAWASAN KEAMANAN UJIAN
+                        </div>
+                        <p class="leading-relaxed">
+                            Dilarang berpindah tab browser atau meminimalkan halaman selama misi berlangsung. Pada <strong>Mode Penilaian</strong>, perpindahan tab akan membatalkan sesi aktif dan mereset skor menjadi <strong>0</strong>.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+         PANEL 2: MODAL SOAL KUIS LITERASI FUTURISTIK (QUESTION & FEEDBACK STATE)
+         ========================================================================== -->
+    <section id="modal-question" class="hidden fixed inset-0 z-40 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-2.5 sm:p-5 overflow-y-auto no-copy"
+             oncontextmenu="return false;">
+        <div class="space-panel rounded-2xl max-w-3xl w-full p-4 sm:p-6 border-2 border-sky-400/60 shadow-2xl my-auto max-h-[94vh] overflow-y-auto">
+            
+            <!-- Header Panel Soal: Animasi Kotak Terbuka, Nomor Soal, Skor & Countdown -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-700">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center text-xl shadow-lg shadow-amber-500/30 animate-bounce">
+                        📦
+                    </div>
+                    <div>
+                        <div class="flex flex-wrap items-center gap-1.5">
+                            <span id="q-number-badge" class="font-orbitron font-black text-xs sm:text-base text-sky-300">KOTAK MISI 1 / 15</span>
+                            <span id="q-type-badge" class="text-[10px] px-2 py-0.5 rounded-full bg-sky-500/20 border border-sky-400/40 text-sky-200 font-bold">
+                                PILIHAN GANDA (A-E)
+                            </span>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 border border-purple-400/40 text-purple-200 font-semibold">
+                                🔒 1x Kunci
+                            </span>
+                        </div>
+                        <div id="q-topic" class="text-xs text-amber-300 font-medium mt-0.5">Topik: Pengertian Algoritma</div>
+                    </div>
+                </div>
+
+                <!-- Timer & Skor Sementara -->
+                <div class="flex items-center gap-3 ml-auto">
+                    <div class="text-right">
+                        <div class="text-[10px] uppercase text-slate-400 font-orbitron">Skor</div>
+                        <div id="q-current-score" class="font-orbitron font-bold text-emerald-400 text-xs sm:text-base">0 Poin</div>
+                    </div>
+                    <div class="px-3 py-1 rounded-xl bg-slate-900 border border-sky-500/40 text-center min-w-[70px]">
+                        <div class="text-[9px] uppercase text-sky-300 font-orbitron">Waktu</div>
+                        <div id="q-timer-text" class="font-orbitron font-black text-base sm:text-lg text-white">45d</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bar Waktu Berkurang -->
+            <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden mt-2.5">
+                <div id="q-timer-bar" class="h-full bg-gradient-to-r from-emerald-400 via-sky-400 to-amber-400 transition-all duration-300" style="width: 100%;"></div>
+            </div>
+
+            <!-- Kotak Wacana Literasi Pengantar -->
+            <div class="mt-3 p-3.5 rounded-xl bg-indigo-950/50 border border-indigo-400/40 space-y-1">
+                <div class="text-[11px] font-orbitron font-bold text-indigo-300 uppercase tracking-wider flex items-center gap-1.5">
+                    <span>📖</span> WACANA LITERASI PENGANTAR
+                </div>
+                <p id="q-literacy" class="text-xs sm:text-sm text-slate-200 leading-relaxed italic">
+                    Memuat teks literasi...
+                </p>
+            </div>
+
+            <!-- Teks Pertanyaan & Petunjuk Menjawab -->
+            <div class="my-3 p-3.5 rounded-xl bg-slate-900/90 border border-slate-700/80">
+                <p id="q-text" class="text-sm sm:text-base font-bold text-white leading-relaxed">
+                    Memuat pertanyaan...
+                </p>
+                <p id="q-instruction" class="text-[11px] text-amber-300 font-medium mt-1"></p>
+            </div>
+
+            <!-- Kontainer Opsi Dinamis (PG A-E / Benar-Salah 3 Pernyataan / PG Kompleks Maks 3) -->
+            <div id="q-options-container" class="grid grid-cols-1 gap-2">
+                <!-- Di-render secara dinamis oleh JS sesuai tipe soal -->
+            </div>
+
+            <!-- Tombol Kunci Jawaban (Khusus Tipe Benar/Salah & PG Kompleks) -->
+            <div id="q-submit-wrapper" class="hidden mt-3">
+                <button id="btn-lock-answer" onclick="GameApp.lockComplexOrTF()"
+                    class="w-full py-2.5 px-5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 font-orbitron font-bold text-xs sm:text-sm text-white shadow-lg shadow-amber-500/30 transition">
+                    🔒 KUNCI JAWABAN SAYA
+                </button>
+            </div>
+
+            <!-- Area Umpan Balik (Feedback) & Pembahasan -->
+            <div id="q-feedback-box" class="hidden mt-3.5 p-3.5 rounded-xl border transition-all">
+                <div id="q-feedback-status" class="font-orbitron font-bold text-xs sm:text-sm mb-1">
+                    HEBAT! JAWABAN BENAR +10 POIN
+                </div>
+                <p id="q-feedback-explanation" class="text-xs sm:text-sm text-slate-200 leading-relaxed"></p>
+            </div>
+
+            <!-- Tombol Lanjutkan Misi (Hanya aktif setelah jawaban dikunci / waktu habis) -->
+            <div class="mt-4 flex justify-end">
+                <button id="btn-continue-mission" onclick="GameApp.continueAfterQuestion()" disabled
+                    class="btn-cyber w-full sm:w-auto px-6 py-2.5 rounded-xl font-orbitron font-bold text-xs sm:text-sm text-white tracking-wider flex items-center justify-center gap-2">
+                    <span>LANJUTKAN MISI & UPGRADE PELURU</span> <span>🚀</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+         PANEL 3: MODAL JEDA PERMAINAN (PAUSE MODAL)
+         ========================================================================== -->
+    <section id="modal-pause" class="hidden fixed inset-0 z-40 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="space-panel rounded-2xl max-w-md w-full p-6 text-center space-y-4 border border-amber-400/50">
+            <div class="text-4xl">⏸️</div>
+            <h2 class="font-orbitron font-bold text-xl text-amber-300">MISI DIJEDA</h2>
+            <p class="text-xs sm:text-sm text-slate-300">
+                Pesawat tempur berada dalam mode orbit stasioner. Siap melanjutkan penjelajahan algoritma?
+            </p>
+            <div class="flex flex-col gap-2.5 pt-2">
+                <button onclick="GameApp.togglePause()" class="btn-cyber py-3 rounded-xl font-orbitron font-bold text-sm text-white">
+                    ▶ LANJUTKAN PERMAINAN
+                </button>
+                <button onclick="GameApp.abortToStart()" class="py-2.5 rounded-xl bg-rose-950/80 hover:bg-rose-900 border border-rose-500/50 text-rose-200 text-xs font-semibold transition">
+                    ⏹ Batalkan & Kembali ke Halaman Awal
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+         PANEL 4: PERINGATAN PELANGGARAN KEAMANAN (SECURITY VIOLATION MODAL)
+         ========================================================================== -->
+    <section id="modal-violation" class="hidden fixed inset-0 z-50 bg-rose-950/90 backdrop-blur-lg flex items-center justify-center p-4">
+        <div class="space-panel rounded-2xl max-w-lg w-full p-6 sm:p-8 text-center space-y-4 border-2 border-rose-500 shadow-[0_0_50px_rgba(244,63,94,0.4)]">
+            <div class="w-16 h-16 rounded-full bg-rose-500/20 border-2 border-rose-400 flex items-center justify-center text-3xl mx-auto animate-pulse">
+                🚨
+            </div>
+            <h2 class="font-orbitron font-black text-xl sm:text-2xl text-rose-400 tracking-wide">
+                PERINGATAN KEAMANAN!
+            </h2>
+            <div class="p-4 rounded-xl bg-slate-950/90 border border-rose-500/40 text-xs sm:text-sm text-slate-200 leading-relaxed font-medium" id="violation-message">
+                PERINGATAN KEAMANAN! Anda terdeteksi meninggalkan halaman permainan. Sesi sebelumnya dibatalkan dan skor menjadi 0. Silakan mulai kembali dari soal pertama.
+            </div>
+            <div class="text-xs text-amber-300 bg-amber-950/50 border border-amber-500/30 rounded-lg p-2.5">
+                Catatan Sesi: Pelanggaran tercatat pada log pengawasan lokal.
+            </div>
+
+            <!-- Jika Mode Penilaian mengunci ulang tanpa otorisasi guru -->
+            <div id="violation-auth-box" class="hidden pt-2 space-y-2 text-left">
+                <label class="block text-xs text-slate-300 font-semibold">Kode Otorisasi Guru (Default: <code class="text-sky-300">GURU10</code>):</label>
+                <input type="password" id="input-teacher-unlock" placeholder="Masukkan PIN Guru untuk mengizinkan ulang..."
+                    class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-600 text-white text-xs select-text" />
+                <p id="unlock-error" class="hidden text-xs text-rose-400">Kode otorisasi guru belum sesuai!</p>
+            </div>
+
+            <button onclick="GameApp.acknowledgeViolation()" class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-rose-600 to-orange-600 hover:from-rose-500 hover:to-orange-500 font-orbitron font-bold text-sm text-white shadow-lg shadow-rose-600/40 transition">
+                KEMBALI KE HALAMAN AWAL (SKOR RESET 0)
+            </button>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+         HALAMAN 5: HASIL AKHIR & RINGKASAN JAWABAN (GAME OVER / RESULT STATE)
+         ========================================================================== -->
+    <section id="screen-result" class="hidden relative z-30 w-full h-full flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+        <div class="space-panel rounded-2xl max-w-4xl w-full p-5 sm:p-8 my-auto border border-sky-400/50 shadow-2xl space-y-6">
+            
+            <!-- Header Hasil & Gelar Pencapaian -->
+            <div class="text-center space-y-2 border-b border-slate-700 pb-5">
+                <div class="inline-block px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-xs font-orbitron font-bold">
+                    🏁 MISI ANTARGALAKSI SELESAI
+                </div>
+                <h1 id="res-rank-title" class="font-orbitron font-black text-2xl sm:text-4xl text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-sky-300">
+                    ACE PILOT
+                </h1>
+                <p id="res-motivation" class="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto">
+                    Luar biasa! Pemahamanmu dalam menyusun algoritma standar sangat sistematis dan presisi.
+                </p>
+            </div>
+
+            <!-- Grid Identitas & Skor Utama -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                <!-- Detail Identitas Murid -->
+                <div class="md:col-span-5 space-card rounded-xl p-4 space-y-2 text-xs sm:text-sm">
+                    <div class="font-orbitron font-bold text-sky-300 text-xs uppercase tracking-wider mb-1">Data Pilot</div>
+                    <div class="flex justify-between py-1 border-b border-slate-700/60">
+                        <span class="text-slate-400">Nama Lengkap:</span>
+                        <span id="res-name" class="font-bold text-white">-</span>
+                    </div>
+                    <div class="flex justify-between py-1 border-b border-slate-700/60">
+                        <span class="text-slate-400">Nomor Absen:</span>
+                        <span id="res-absen" class="font-bold text-white">-</span>
+                    </div>
+                    <div class="flex justify-between py-1 border-b border-slate-700/60">
+                        <span class="text-slate-400">Kelas:</span>
+                        <span id="res-class" class="font-bold text-white">-</span>
+                    </div>
+                    <div class="flex justify-between py-1 border-b border-slate-700/60">
+                        <span class="text-slate-400">Durasi Pengerjaan:</span>
+                        <span id="res-duration" class="font-bold text-amber-300">00m 00d</span>
+                    </div>
+                    <div class="flex justify-between py-1">
+                        <span class="text-slate-400">Mode Sesi:</span>
+                        <span id="res-mode" class="font-bold text-sky-300">Penilaian</span>
+                    </div>
+                </div>
+
+                <!-- Kotak Skor Besar & Rincian Benar/Salah/Tak Terjawab -->
+                <div class="md:col-span-7 grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div class="col-span-2 sm:col-span-4 space-card rounded-xl p-4 flex items-center justify-between bg-gradient-to-r from-sky-950/80 to-indigo-950/80 border-sky-400/50">
+                        <div>
+                            <div class="text-xs font-orbitron text-sky-300 uppercase">Skor Akhir</div>
+                            <div class="text-xs text-slate-400">Rumus: Benar × 10</div>
+                        </div>
+                        <div class="text-right">
+                            <span id="res-score" class="font-orbitron font-black text-3xl sm:text-4xl text-emerald-400">150</span>
+                            <span class="font-orbitron text-sm text-slate-400">/ 150</span>
+                        </div>
+                    </div>
+
+                    <div class="space-card rounded-xl p-3 text-center">
+                        <div class="text-[11px] text-slate-400">Benar</div>
+                        <div id="res-correct" class="font-orbitron font-bold text-lg sm:text-xl text-emerald-400 mt-0.5">0</div>
+                    </div>
+                    <div class="space-card rounded-xl p-3 text-center">
+                        <div class="text-[11px] text-slate-400">Salah</div>
+                        <div id="res-wrong" class="font-orbitron font-bold text-lg sm:text-xl text-rose-400 mt-0.5">0</div>
+                    </div>
+                    <div class="space-card rounded-xl p-3 text-center">
+                        <div class="text-[11px] text-slate-400">Tak Terjawab</div>
+                        <div id="res-timeout" class="font-orbitron font-bold text-lg sm:text-xl text-amber-400 mt-0.5">0</div>
+                    </div>
+                    <div class="space-card rounded-xl p-3 text-center">
+                        <div class="text-[11px] text-slate-400">Persentase</div>
+                        <div id="res-percent" class="font-orbitron font-bold text-lg sm:text-xl text-sky-300 mt-0.5">0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tombol Aksi Hasil Akhir -->
+            <div class="flex flex-wrap items-center justify-center gap-3 pt-2 no-print">
+                <button onclick="GameApp.toggleSummary()" class="btn-cyber px-5 py-3 rounded-xl font-orbitron font-bold text-xs sm:text-sm text-white flex items-center gap-2">
+                    <span>📋</span> LIHAT RINGKASAN JAWABAN
+                </button>
+                <button onclick="window.print()" class="px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 border border-emerald-400 font-orbitron font-bold text-xs sm:text-sm text-white transition flex items-center gap-2">
+                    <span>🖨️</span> CETAK HASIL
+                </button>
+                <button onclick="GameApp.returnToHomeFromResult()" class="px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 font-orbitron font-bold text-xs sm:text-sm text-slate-200 transition flex items-center gap-2">
+                    <span>🏠</span> KEMBALI KE HALAMAN AWAL
+                </button>
+            </div>
+
+            <!-- Ringkasan Jawaban 15 Soal (Expandable) -->
+            <div id="res-summary-container" class="hidden space-y-3 pt-4 border-t border-slate-700 max-h-96 overflow-y-auto pr-1">
+                <h3 class="font-orbitron font-bold text-sm text-sky-300">PEMBAHASAN & RINGKASAN 15 SOAL ALGORITMA</h3>
+                <div id="res-summary-list" class="space-y-2.5">
+                    <!-- Di-render secara dinamis oleh JS -->
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+         MODAL 6: PENGATURAN GURU (KELAS, MODE LATIHAN VS PENILAIAN, RESET OTORISASI)
+         ========================================================================== -->
+    <section id="modal-teacher" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+        <div class="space-panel rounded-2xl max-w-xl w-full p-6 space-y-4 border border-sky-400/50 my-auto">
+            <div class="flex items-center justify-between border-b border-slate-700 pb-3">
+                <h2 class="font-orbitron font-bold text-lg text-sky-300 flex items-center gap-2">
+                    <span>⚙️</span> KONFIGURASI GURU INFORMATIKA
+                </h2>
+                <button onclick="GameApp.closeTeacherModal()" class="text-slate-400 hover:text-white text-xl font-bold">&times;</button>
+            </div>
+
+            <div class="space-y-4 text-xs sm:text-sm">
+                <!-- Pilihan Mode -->
+                <div>
+                    <label class="block font-semibold text-slate-200 mb-1.5">1. Mode Pelaksanaan Permainan:</label>
+                    <select id="cfg-mode" class="w-full px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-600 text-white">
+                        <option value="assessment">Mode Penilaian (Pelanggaran Tab Reset Skor = 0 & Wajib Otorisasi Ulang)</option>
+                        <option value="practice">Mode Latihan (Murid Dapat Bermain Ulang Tanpa Penalti Ketat)</option>
+                    </select>
+                </div>
+
+                <!-- Kebijakan Keluar Fullscreen -->
+                <div class="flex items-center justify-between gap-3 p-3 rounded-xl bg-slate-900/80 border border-slate-700">
+                    <div>
+                        <div class="font-semibold text-slate-200">Batalkan Sesi Jika Keluar Layar Penuh (Fullscreen)</div>
+                        <div class="text-xs text-slate-400">Jika aktif pada Mode Penilaian, keluar dari fullscreen dianggap pelanggaran sesi.</div>
+                    </div>
+                    <input type="checkbox" id="cfg-strict-fullscreen" class="w-5 h-5 accent-sky-500">
+                </div>
+
+                <!-- Kustomisasi Daftar Kelas -->
+                <div>
+                    <label class="block font-semibold text-slate-200 mb-1">2. Daftar Pilihan Kelas (Pisahkan dengan koma):</label>
+                    <input type="text" id="cfg-classes" value="X - A, X - B"
+                        class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-600 text-white select-text" />
+                    <p class="text-[11px] text-slate-400 mt-1">Default kelas diatur menjadi X - A dan X - B (dapat disesuaikan guru).</p>
+                </div>
+
+                <!-- Kode Otorisasi Guru -->
+                <div>
+                    <label class="block font-semibold text-slate-200 mb-1">3. Kode PIN Otorisasi Guru (Untuk Buka Kunci Sesi Ujian):</label>
+                    <input type="text" id="cfg-pin" value="GURU10"
+                        class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-600 text-white select-text" />
+                </div>
+
+                <!-- Riwayat Log Sesi Lokal & Reset Kunci -->
+                <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-700 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="font-semibold text-amber-300">Status Sesi Tersimpan di Browser Ini:</span>
+                        <button onclick="GameApp.resetCompletedSessions()" class="px-2.5 py-1 rounded bg-rose-600/30 hover:bg-rose-600/50 border border-rose-500 text-rose-200 text-xs">
+                            Reset Kunci Sesi Murid
+                        </button>
+                    </div>
+                    <div id="cfg-session-logs" class="text-xs text-slate-400 max-h-24 overflow-y-auto">
+                        Belum ada riwayat sesi tercatat.
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2 border-t border-slate-700">
+                <button onclick="GameApp.saveTeacherConfig()" class="btn-cyber px-5 py-2.5 rounded-xl font-orbitron font-bold text-xs text-white">
+                    💾 SIMPAN PENGATURAN
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+         MODAL 7: DOKUMENTASI TEKNIS, BATAS KEAMANAN BROWSER & DAFTAR PENGUJIAN
+         ========================================================================== -->
+    <section id="modal-docs" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+        <div class="space-panel rounded-2xl max-w-3xl w-full p-6 space-y-4 border border-sky-400/50 my-auto max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-slate-700 pb-3">
+                <h2 class="font-orbitron font-bold text-lg text-amber-300">
+                    📘 DOKUMENTASI APLIKASI, KEAMANAN & DAFTAR UJI
+                </h2>
+                <button onclick="GameApp.closeDocsModal()" class="text-slate-400 hover:text-white text-xl font-bold">&times;</button>
+            </div>
+
+            <div class="space-y-4 text-xs sm:text-sm text-slate-200 leading-relaxed">
+                <div class="space-card p-3.5 rounded-xl">
+                    <h3 class="font-orbitron font-bold text-sky-300 mb-1">1. Petunjuk Menjalankan Aplikasi di Browser</h3>
+                    <p>Simpan kode sebagai berkas <code>index.html</code> lalu klik dua kali untuk membukanya di <strong>Google Chrome</strong> atau <strong>Microsoft Edge</strong> (Desktop maupun perangkat seluler). Tidak memerlukan instalasi server lokal untuk menjalankan prototipe interaktif ini.</p>
+                </div>
+
+                <div class="space-card p-3.5 rounded-xl">
+                    <h3 class="font-orbitron font-bold text-sky-300 mb-1">2. Pengaturan Kelas & Mode Latihan vs Mode Penilaian</h3>
+                    <p>Klik tombol <strong>"Pengaturan Guru"</strong> di halaman awal. Guru dapat menambahkan nama kelas (misal: <code>X-A, X-B, X-C, X-SIJA</code>) dan memilih antara <strong>Mode Latihan</strong> (bebas mengulang) atau <strong>Mode Penilaian</strong> (pelanggaran pindah tab langsung membatalkan sesi, menetapkan skor = 0, dan meminta PIN Guru <code>GURU10</code> jika murid yang sama ingin mengulang sesi penilaian).</p>
+                </div>
+
+                <div class="space-card p-3.5 rounded-xl border-amber-500/40">
+                    <h3 class="font-orbitron font-bold text-amber-300 mb-1">3. Penjelasan Batas Keamanan Browser & Kebutuhan Backend</h3>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li><strong>Deteksi Visibilitas & Fokus:</strong> Aplikasi menggunakan <code>Page Visibility API (visibilitychange)</code> untuk mendeteksi perpindahan tab/minimalkan jendela secara akurat. Event <code>window.blur</code> hanya dijadikan sinyal peringatan pendamping agar notifikasi sistem sesaat tidak langsung merugikan murid.</li>
+                        <li><strong>Keterbatasan Sandboxing Web:</strong> Aplikasi web standar di dalam browser <em>tidak dapat</em> secara penuh mengunci sistem operasi, memblokir <code>Alt+Tab</code>, atau menutup tab lain. Untuk ujian berisiko tinggi, sekolah disarankan memadukan aplikasi ini dengan <em>Safe Exam Browser (SEB)</em> atau mode Kiosk pada Chromebook/Windows terkelola.</li>
+                        <li><strong>Perlindungan Bank Soal & Skor (Backend):</strong> Pencegahan klik kanan dan salin-tempel (copy/cut/paste) pada panel soal hanya menghalangi tindakan kasual. Untuk pelaksanaan penilaian resmi yang tahan manipulasi DevTools/<code>localStorage</code>, gunakan arsitektur <strong>Server Backend (Node.js/PHP/Python)</strong> yang mengirimkan soal satu per satu menggunakan token sesi, memvalidasi jawaban di sisi server, tanpa menyertakan kunci jawaban di klien.</li>
+                    </ul>
+                </div>
+
+                <div class="space-card p-3.5 rounded-xl">
+                    <h3 class="font-orbitron font-bold text-emerald-300 mb-1">4. Daftar Pengujian Kualitas (QA Checklist)</h3>
+                    <ul class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs">
+                        <li>✅ Validasi form identitas kosong ditolak sebelum mulai.</li>
+                        <li>✅ 15 Kotak Misi tersebar berurutan hingga Portal Finis.</li>
+                        <li>✅ Setiap kotak misi hanya memunculkan 1 soal unik.</li>
+                        <li>✅ Skor +10 hanya dihitung 1x per soal (anti klik ganda).</li>
+                        <li>✅ Timer 30 detik bebas dari penggandaan interval.</li>
+                        <li>✅ Tombol "Lanjutkan Misi" terkunci sebelum menjawab.</li>
+                        <li>✅ Gerbang finis menolak akses jika misi &lt; 15 selesai.</li>
+                        <li>✅ Pindah tab saat Mode Penilaian mereset skor menjadi 0.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="flex justify-end pt-2 border-t border-slate-700">
+                <button onclick="GameApp.closeDocsModal()" class="btn-cyber px-5 py-2 rounded-xl font-orbitron font-bold text-xs text-white">
+                    TUTUP DOKUMENTASI
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        /* ==========================================================================
+           BAGIAN 2: QUESTIONS.JS & WEAPON_STYLES (15 VARIAN PELURU & 15 SOAL LITERASI)
+           ========================================================================== */
+        const WEAPON_STYLES = [
+            { level: 1,  name: 'Lv.1 Crimson Twin-Laser',   color: '#f43f5e', core: '#ffe4e6', shape: 'beam',    pattern: 'twin',   speed: 14, size: 4 },
+            { level: 2,  name: 'Lv.2 Cyan Ion-Blaster',     color: '#06b6d4', core: '#cffafe', shape: 'beam',    pattern: 'single', speed: 15, size: 5 },
+            { level: 3,  name: 'Lv.3 Emerald Pulse-Orb',    color: '#10b981', core: '#d1fae5', shape: 'orb',     pattern: 'twin',   speed: 14, size: 6 },
+            { level: 4,  name: 'Lv.4 Amber Vulcan-Spread',  color: '#f59e0b', core: '#fef3c7', shape: 'diamond', pattern: 'spread', speed: 14, size: 5 },
+            { level: 5,  name: 'Lv.5 Violet Wave-Cannon',   color: '#8b5cf6', core: '#ede9fe', shape: 'orb',     pattern: 'wave',   speed: 14, size: 6 },
+            { level: 6,  name: 'Lv.6 Magenta Twin-Lance',   color: '#ec4899', core: '#fce7f3', shape: 'diamond', pattern: 'twin',   speed: 15, size: 6 },
+            { level: 7,  name: 'Lv.7 Lime Hyper-Beam',      color: '#84cc16', core: '#ecfccb', shape: 'beam',    pattern: 'spread', speed: 15, size: 4 },
+            { level: 8,  name: 'Lv.8 Sky Wave-Torpedo',     color: '#38bdf8', core: '#e0f2fe', shape: 'orb',     pattern: 'wave',   speed: 15, size: 7 },
+            { level: 9,  name: 'Lv.9 Orange Nova-Scatter',  color: '#f97316', core: '#ffedd5', shape: 'diamond', pattern: 'spread', speed: 15, size: 6 },
+            { level: 10, name: 'Lv.10 Teal Twin-Phaser',    color: '#14b8a6', core: '#ccfbf1', shape: 'beam',    pattern: 'twin',   speed: 16, size: 5 },
+            { level: 11, name: 'Lv.11 Fuchsia Star-Burst',  color: '#d946ef', core: '#fae8ff', shape: 'orb',     pattern: 'spread', speed: 16, size: 6 },
+            { level: 12, name: 'Lv.12 Gold Flanker-Wave',   color: '#eab308', core: '#fef9c3', shape: 'diamond', pattern: 'wave',   speed: 16, size: 6 },
+            { level: 13, name: 'Lv.13 Indigo Rail-Cannon',  color: '#6366f1', core: '#e0e7ff', shape: 'beam',    pattern: 'spread', speed: 17, size: 5 },
+            { level: 14, name: 'Lv.14 Rose Plasma-Hurricane', color: '#fb7185', core: '#fff1f2', shape: 'orb',   pattern: 'wave',   speed: 17, size: 7 },
+            { level: 15, name: 'Lv.15 Prismatic Sukhoi-X',  color: '#22d3ee', core: '#ffffff', shape: 'diamond', pattern: 'spread', speed: 18, size: 7 }
+        ];
+
+        const QUESTION_BANK = [
+            // ======================================================================
+            // SOAL 1 - 5: PILIHAN GANDA TUNGGAL (OPSI A - E) BERBASIS LITERASI
+            // ======================================================================
+            {
+                id: 1,
+                type: 'single',
+                topic: 'Pengertian Algoritma',
+                literacy: 'Di dalam kokpit pesawat tempur Sukhoi, komputer penerbangan menjalankan serangkaian instruksi terstruktur untuk menstabilkan sayap saat melewati turbulensi. Dalam dunia Informatika, komputer tidak dapat menebak keinginan manusia tanpa diberikan tahapan instruksi yang jelas dan berurutan dari awal hingga akhir.',
+                question: 'Berdasarkan ilustrasi literasi tersebut, apa yang dimaksud dengan algoritma dalam Informatika?',
+                options: [
+                    'Kumpulan gambar dekoratif pada layar komputer pesawat',
+                    'Urutan langkah logis dan sistematis untuk menyelesaikan suatu masalah',
+                    'Alat keras (hardware) untuk mencetak dokumen laporan penerbangan',
+                    'Perangkat antena untuk menghubungkan pesawat dengan satelit internet',
+                    'Aplikasi pemutar musik otomatis di dalam ruang kendali pilot'
+                ],
+                correctIndex: 1,
+                explanation: 'Algoritma adalah urutan langkah yang logis, terstruktur, dan sistematis untuk menyelesaikan suatu masalah.'
+            },
+            {
+                id: 2,
+                type: 'single',
+                topic: 'Algoritma Aktivitas Sehari-hari',
+                literacy: 'Sebelum bertugas, seorang taruna menyiapkan mi instan di dapur pangkalan. Pada kemasan tertulis prosedur: (1) Rebus air hingga mendidih, (2) Masukkan mi selama 3 menit, (3) Campurkan bumbu pada piring, (4) Tiriskan mi dan aduk merata. Jika urutan tersebut dibalik secara acak, makanan tidak akan matang dengan baik.',
+                question: 'Mengapa kita perlu mengikuti urutan langkah yang benar seperti pada pembuatan mi instan tersebut?',
+                options: [
+                    'Agar proses memasak berjalan dengan benar dan menghasilkan output sesuai harapan',
+                    'Agar ukuran kemasan mi instan berubah menjadi dua kali lebih besar',
+                    'Agar kompor di dapur pangkalan dapat berubah warna secara otomatis',
+                    'Agar mi instan dapat langsung dimakan tanpa perlu dibuka kemasannya',
+                    'Agar air di dalam panci membeku menjadi batu es seketika'
+                ],
+                correctIndex: 0,
+                explanation: 'Urutan langkah yang tepat memastikan setiap tahapan proses berjalan benar sehingga menghasilkan hasil (output) yang diharapkan.'
+            },
+            {
+                id: 3,
+                type: 'single',
+                topic: 'Langkah Awal Algoritma',
+                literacy: 'Di laboratorium Informatika sekolah, Rina diminta menyusun algoritma standar untuk menyalakan komputer desktop dari kondisi mati total. Setiap algoritma harus dimulai dari prasyarat dasar agar langkah berikutnya dapat dieksekusi.',
+                question: 'Langkah pertama yang paling tepat dan logis saat membuat algoritma menyalakan komputer adalah ...',
+                options: [
+                    'Langsung menekan tombol Shut Down pada layar sistem operasi',
+                    'Mencabut seluruh kabel monitor dan papan ketik dari stopkontak',
+                    'Memastikan perangkat komputer sudah terhubung ke sumber listrik dengan aman',
+                    'Menghapus seluruh berkas dokumen yang ada di dalam penyimpanan',
+                    'Membuka aplikasi pengolah kata sebelum layar monitor menyala'
+                ],
+                correctIndex: 2,
+                explanation: 'Memastikan komputer memperoleh daya listrik adalah langkah prasyarat paling awal sebelum menekan tombol Power.'
+            },
+            {
+                id: 4,
+                type: 'single',
+                topic: 'Urutan Logis Pengiriman Data',
+                literacy: 'Pak Andi menugaskan murid kelas X mengumpulkan laporan algoritma melalui surat elektronik (email). Agar berkas laporan terkirim ke alamat email guru, setiap tindakan harus bergantung secara logis pada tindakan sebelumnya.',
+                question: 'Manakah urutan algoritma yang paling tepat untuk mengirim tugas melalui email?',
+                options: [
+                    'Menulis isi email → membuka aplikasi → menyalakan komputer → melampirkan berkas',
+                    'Menyalakan perangkat → membuka layanan email → menulis pesan & melampirkan tugas → menekan tombol Kirim',
+                    'Menekan tombol Kirim tugas terlebih dahulu → menulis alamat email tujuan → menyalakan perangkat',
+                    'Menutup aplikasi browser → membuka layanan email → mematikan sambungan internet',
+                    'Melampirkan berkas tugas tanpa menyalakan perangkat maupun membuka aplikasi email'
+                ],
+                correctIndex: 1,
+                explanation: 'Algoritma harus disusun berurutan mulai dari menyiapkan perangkat, membuka aplikasi, menyiapkan isi/lampiran, hingga mengirimkannya.'
+            },
+            {
+                id: 5,
+                type: 'single',
+                topic: 'Komponen Input dalam Algoritma',
+                literacy: 'Sebuah tim teknisi ingin membuat program sederhana untuk menghitung luas landasan pacu pesawat yang berbentuk persegi panjang. Dalam konsep Input-Proses-Output (IPO), program membutuhkan data awal sebelum dapat melakukan perkalian.',
+                question: 'Dalam algoritma menghitung luas persegi panjang, komponen yang termasuk sebagai data masukan (Input) adalah ...',
+                options: [
+                    'Nilai panjang dan nilai lebar persegi panjang',
+                    'Hasil akhir perkalian luas saja tanpa data ukuran',
+                    'Jenis warna tema layar monitor yang digunakan pengguna',
+                    'Nama merek aplikasi pembuat kode program',
+                    'Suara efek tombol ketika komputer dimatikan'
+                ],
+                correctIndex: 0,
+                explanation: 'Panjang dan lebar merupakan nilai masukan (Input) yang dibutuhkan agar rumus luas persegi panjang dapat diproses.'
+            },
+
+            // ======================================================================
+            // SOAL 6 - 10: PERNYATAAN BENAR / SALAH (3 PERNYATAAN PER SOAL)
+            // ======================================================================
+            {
+                id: 6,
+                type: 'tf3',
+                topic: 'Tahap Proses dan Output (IPO)',
+                literacy: 'Sebuah algoritma kalkulator geometri menerima dua nilai masukan berupa Panjang dan Lebar, kemudian menghitung Luas = Panjang × Lebar, serta menghitung Jumlah = Bilangan1 + Bilangan2 untuk ditampilkan ke layar monitor pilot.',
+                question: 'Tentukan status BENAR atau SALAH untuk ketiga pernyataan mengenai Proses dan Output berikut!',
+                statements: [
+                    'Operasi mengalikan nilai Panjang dengan Lebar (Panjang × Lebar) merupakan bagian dari tahapan PROSES.',
+                    'Hasil penjumlahan kedua bilangan yang ditampilkan ke layar monitor merupakan bagian dari OUTPUT.',
+                    'Mematikan komputer secara paksa sebelum perhitungan selesai adalah tahapan PROSES utama dalam rumus luas.'
+                ],
+                correctTF: [true, true, false],
+                explanation: 'Pernyataan 1 Benar (perkalian adalah proses pengolahan data), Pernyataan 2 Benar (hasil yang ditampilkan adalah output), dan Pernyataan 3 Salah.'
+            },
+            {
+                id: 7,
+                type: 'tf3',
+                topic: 'Struktur Algoritma Berurutan (Sekuensial)',
+                literacy: 'Algoritma sekuensial (berurutan) mengeksekusi instruksi langkah demi langkah dari atas ke bawah tanpa melompati prasyarat logis, misalnya saat kita menyimpan dokumen laporan di komputer atau bersiap berangkat ke sekolah.',
+                question: 'Analisislah ketiga pernyataan aktivitas berikut, manakah yang termasuk urutan logis (BENAR) dan tidak logis (SALAH)?',
+                statements: [
+                    'Menyimpan dokumen ke folder penyimpanan dilakukan setelah pengguna memilih perintah Simpan (Save).',
+                    'Memakai sepatu terlebih dahulu sebelum mengenakan kaus kaki adalah contoh urutan sekuensial yang tepat.',
+                    'Membuka aplikasi mesin pencari dilakukan setelah perangkat menyala dan browser berhasil dibuka.'
+                ],
+                correctTF: [true, false, true],
+                explanation: 'Pernyataan 1 Benar, Pernyataan 2 Salah (kaus kaki harus dipakai sebelum sepatu), dan Pernyataan 3 Benar.'
+            },
+            {
+                id: 8,
+                type: 'tf3',
+                topic: 'Struktur Percabangan (Selection / If-Else)',
+                literacy: 'Pada simulasi ujian terbang, sistem komputer menerapkan aturan kelulusan dengan batas nilai minimal 75. Apabila nilai taruna lebih dari atau sama dengan 75 (Nilai ≥ 75), layar menampilkan status "Lulus"; jika kurang dari 75, layar menampilkan "Belum Lulus".',
+                question: 'Tentukan BENAR atau SALAH untuk setiap pernyataan tentang struktur percabangan berikut!',
+                statements: [
+                    'Aturan "Jika Nilai ≥ 75 tampilkan Lulus, jika tidak tampilkan Belum Lulus" merupakan penerapan algoritma percabangan.',
+                    'Jika seorang taruna memperoleh nilai 82, maka algoritma akan menjalankan cabang keputusan "Lulus".',
+                    'Dalam algoritma percabangan, kondisi nilai sama sekali tidak perlu diperiksa karena semua nilai otomatis dianggap 100.'
+                ],
+                correctTF: [true, true, false],
+                explanation: 'Percabangan mengevaluasi kondisi (Nilai ≥ 75) untuk memilih aksi yang tepat. Nilai 82 memenuhi syarat sehingga Lulus.'
+            },
+            {
+                id: 9,
+                type: 'tf3',
+                topic: 'Struktur Perulangan (Looping)',
+                literacy: 'Komandan pangkalan meminta sistem radar mengirimkan pesan teks "Halo Pilot" sebanyak 5 kali berturut-turut ke layar komunikasi. Daripada menulis perintah tampilkan sebanyak lima baris manual, programmer menggunakan struktur kontrol yang efisien.',
+                question: 'Tentukan BENAR atau SALAH terkait penggunaan struktur perulangan pada kasus di atas!',
+                statements: [
+                    'Struktur perulangan (looping) digunakan untuk menjalankan instruksi yang sama secara berulang kali sesuai jumlah yang ditentukan.',
+                    'Untuk menampilkan kata "Halo Pilot" 5 kali, kita cukup mengatur perulangan dengan batas hitung sebanyak 5 kali.',
+                    'Perulangan hanya boleh digunakan untuk menghapus sistem operasi dan menghentikan komputer secara permanen.'
+                ],
+                correctTF: [true, true, false],
+                explanation: 'Perulangan (for/while loop) mengeksekusi blok kode secara berulang selama kondisi terpenuhi, sehingga efisien dan rapi.'
+            },
+            {
+                id: 10,
+                type: 'tf3',
+                topic: 'Notasi Pseudocode dan Simbol Flowchart',
+                literacy: 'Sebelum menulis kode program, seorang siswa kelas X merancang algoritma penjumlahan dua bilangan dengan pseudocode: "INPUT A, B → HASIL = A + B → OUTPUT HASIL", lalu menggambar diagram alir (flowchart) yang memuat simbol belah ketupat (diamond).',
+                question: 'Tentukan BENAR atau SALAH untuk ketiga pernyataan mengenai Pseudocode dan Flowchart berikut!',
+                statements: [
+                    'Urutan pseudocode "INPUT A, B → HASIL = A + B → OUTPUT HASIL" sudah tepat untuk menjumlahkan dua bilangan.',
+                    'Simbol belah ketupat (Decision) pada flowchart digunakan untuk menunjukkan pemeriksaan kondisi atau percabangan.',
+                    'Simbol belah ketupat pada flowchart hanya berfungsi sebagai tempat menyimpan foto dan gambar latar belakang.'
+                ],
+                correctTF: [true, true, false],
+                explanation: 'Pseudocode tersebut sudah urut (Input-Proses-Output), dan simbol belah ketupat pada flowchart berfungsi untuk keputusan/percabangan.'
+            },
+
+            // ======================================================================
+            // SOAL 11 - 15: PILIHAN GANDA KOMPLEKS (A-E, PILIH MAKSIMAL 3 JAWABAN)
+            // ======================================================================
+            {
+                id: 11,
+                type: 'multi',
+                topic: 'Algoritma Pencarian Informasi di Internet',
+                literacy: 'Saat mengerjakan proyek Informatika, Dika ingin mencari referensi materi "Algoritma Standar" menggunakan mesin pencari (search engine) di komputer laboratorium. Agar pencarian berhasil, Dika harus melakukan beberapa tahapan yang runtut.',
+                question: 'Manakah di antara langkah-langkah berikut yang termasuk tahapan BENAR dalam algoritma mencari informasi di internet? (Pilih maksimal 3 jawaban benar)',
+                options: [
+                    'Membuka aplikasi peramban web (browser) pada perangkat yang sudah menyala',
+                    'Mengakses halaman mesin pencari dan mengetikkan kata kunci pencarian yang relevan',
+                    'Menekan tombol cari (Enter) lalu memeriksa serta memilih hasil pencarian yang sesuai',
+                    'Mematikan perangkat komputer sebelum mengetikkan kata kunci pencarian',
+                    'Memutus sambungan jaringan internet agar halaman web tidak dapat dimuat'
+                ],
+                correctIndices: [0, 1, 2],
+                explanation: 'Tiga tahapan utama pencarian informasi adalah membuka browser (A), mengetik kata kunci di mesin pencari (B), serta memeriksa hasil pencarian (C).'
+            },
+            {
+                id: 12,
+                type: 'multi',
+                topic: 'Menganalisis & Memperbaiki Kesalahan Algoritma (Debugging)',
+                literacy: 'Seorang siswa menulis algoritma menghitung luas persegi (yang panjang sisinya 6 cm) menggunakan rumus: LUAS = SISI + SISI, sehingga menghasilkan 12 cm², padahal seharusnya 36 cm². Dalam Informatika, kesalahan rumus seperti ini disebut kesalahan logika (logical error).',
+                question: 'Manakah pernyataan dan langkah perbaikan yang TEPAT terkait kasus kesalahan algoritma tersebut? (Pilih maksimal 3 jawaban benar)',
+                options: [
+                    'Mengganti operator penjumlahan menjadi perkalian sehingga rumusnya menjadi LUAS = SISI × SISI',
+                    'Melakukan uji coba ulang dengan memasukkan nilai sisi untuk memastikan hasil luas sudah benar (36 cm²)',
+                    'Memastikan variabel SISI sudah menerima input angka sebelum rumus luas dijalankan',
+                    'Menghapus variabel SISI agar program tidak memiliki nilai masukan sama sekali',
+                    'Menghentikan seluruh langkah program dan menggantinya dengan pengaturan warna layar'
+                ],
+                correctIndices: [0, 1, 2],
+                explanation: 'Perbaikan algoritma luas persegi dilakukan dengan memastikan input SISI tersedia (C), memperbaiki rumus menjadi SISI × SISI (A), dan mengujinya kembali (B).'
+            },
+            {
+                id: 13,
+                type: 'multi',
+                topic: 'Menyusun Algoritma Menghitung Rata-rata Dua Nilai',
+                literacy: 'Guru Informatika meminta murid menyusun algoritma untuk menghitung nilai rata-rata dari dua ujian praktik (Nilai 1 dan Nilai 2). Rumus matematika rata-rata dua bilangan adalah menjumlahkan kedua nilai terlebih dahulu, kemudian membagi jumlah tersebut dengan 2.',
+                question: 'Pilihlah tahapan-tahapan yang WAJIB ada secara berurutan dalam algoritma menghitung rata-rata dua nilai tersebut! (Pilih maksimal 3 jawaban benar)',
+                options: [
+                    'Menerima masukan (Input) berupa dua nilai, yaitu Nilai 1 dan Nilai 2',
+                    'Menjumlahkan Nilai 1 dan Nilai 2, kemudian membagi hasil penjumlahannya dengan 2',
+                    'Menampilkan hasil perhitungan rata-rata (Output) ke layar pengguna',
+                    'Menampilkan nilai rata-rata terlebih dahulu sebelum pengguna memasukkan Nilai 1 dan Nilai 2',
+                    'Menghapus seluruh nilai masukan sebelum proses pembagian dilakukan'
+                ],
+                correctIndices: [0, 1, 2],
+                explanation: 'Algoritma rata-rata terdiri atas 3 langkah inti: Input dua nilai (A), Proses jumlahkan lalu bagi dua (B), dan Output tampilkan hasil (C).'
+            },
+            {
+                id: 14,
+                type: 'multi',
+                topic: 'Simbol Standar Diagram Alir (Flowchart)',
+                literacy: 'Diagram alir (flowchart) menggunakan simbol-simbol grafis standar internasional agar alur algoritma mudah dipahami oleh semua programmer. Setiap bentuk geometri memiliki fungsi spesifik dalam merepresentasikan langkah algoritma.',
+                question: 'Manakah pasangan simbol flowchart dan fungsinya di bawah ini yang BENAR? (Pilih maksimal 3 jawaban benar)',
+                options: [
+                    'Simbol Kapsul / Terminator (Oval) digunakan untuk menandai Awal (Start) dan Akhir (End) algoritma',
+                    'Simbol Jajar Genjang (Parallelogram) digunakan untuk menyatakan proses Input atau Output data',
+                    'Simbol Persegi Panjang (Process) digunakan untuk menyatakan proses perhitungan atau pengolahan data',
+                    'Simbol Garis Panah (Flowline) hanya digunakan untuk menghapus seluruh program dari memori',
+                    'Simbol Belah Ketupat (Decision) hanya digunakan untuk mematikan layar monitor komputer'
+                ],
+                correctIndices: [0, 1, 2],
+                explanation: 'Dalam flowchart standar: Terminator untuk Start/End (A), Jajar Genjang untuk Input/Output (B), dan Persegi Panjang untuk Proses perhitungan (C).'
+            },
+            {
+                id: 15,
+                type: 'multi',
+                topic: 'Kriteria Algoritma yang Baik dan Efektif',
+                literacy: 'Sebagai penutup misi penerbangan algoritma, seorang pilot tempur Informatika harus memahami karakteristik algoritma yang baik menurut Donald Knuth, agar program yang disusun dapat diandalkan oleh sistem komputer.',
+                question: 'Manakah di antara pernyataan berikut yang merupakan ciri-ciri algoritma yang BAIK dan STANDAR? (Pilih maksimal 3 jawaban benar)',
+                options: [
+                    'Memiliki instruksi yang jelas, tidak ambigu (tidak bermakna ganda), dan tersusun secara logis',
+                    'Memiliki batas akhir (finiteness), artinya algoritma harus berhenti setelah sejumlah langkah terbatas',
+                    'Menghasilkan minimal satu keluaran (output) sebagai solusi dari permasalahan yang diproses',
+                    'Berjalan terus-menerus tanpa pernah berhenti selamanya (infinite loop) meskipun masalah sudah selesai',
+                    'Menggunakan langkah-langkah yang mustahil dikerjakan oleh manusia maupun komputer'
+                ],
+                correctIndices: [0, 1, 2],
+                explanation: 'Ciri algoritma yang baik adalah langkahnya jelas/tidak ambigu (A), memiliki titik berhenti/finiteness (B), dan menghasilkan output solusi yang tepat (C).'
+            }
+        ];
+
+        /* ==========================================================================
+           BAGIAN 3: SYNTHESIZER EFEK SUARA & BGM (WEB AUDIO API TANPA ASET EKSTERNAL)
+           ========================================================================== */
+        const AudioFX = {
+            ctx: null,
+            muted: false,
+            bgmEnabled: true,
+            bgmPlaying: false,
+            bgmMode: 'action', // 'lobby' | 'action' | 'quiz'
+            bgmStep: 0,
+            bgmIntervalId: null,
+
+            // Tangga nada Space Synthwave (A Minor / C Major Energetic Arcade)
+            bassPattern: [110, 110, 220, 110, 130.81, 130.81, 146.83, 164.81, 110, 110, 220, 110, 174.61, 174.61, 164.81, 146.83],
+            arpPattern:  [440, 523.25, 659.25, 880, 659.25, 523.25, 587.33, 659.25, 440, 523.25, 659.25, 987.77, 880, 783.99, 659.25, 587.33],
+            quizPadPattern: [220, 261.63, 329.63, 392.00, 329.63, 261.63, 293.66, 329.63],
+
+            init() {
+                if (!this.ctx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    if (AudioCtx) this.ctx = new AudioCtx();
+                }
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            },
+
+            toggleMute() {
+                this.muted = !this.muted;
+                const btn = document.getElementById('btn-sound');
+                if (btn) btn.textContent = this.muted ? '🔇' : '🔊';
+                if (!this.muted) this.uiClick();
+            },
+
+            toggleBGM() {
+                this.init();
+                this.bgmEnabled = !this.bgmEnabled;
+                this.updateBGMButtonsUI();
+                if (this.bgmEnabled) {
+                    this.startBGM(this.bgmMode);
+                } else {
+                    this.stopBGM();
+                }
+            },
+
+            previewBGMFromLobby() {
+                this.init();
+                if (!this.bgmPlaying) {
+                    this.bgmEnabled = true;
+                    this.startBGM('lobby');
+                } else {
+                    this.bgmEnabled = !this.bgmEnabled;
+                    if (!this.bgmEnabled) this.stopBGM();
+                    else this.startBGM('lobby');
+                }
+                this.updateBGMButtonsUI();
+            },
+
+            updateBGMButtonsUI() {
+                const hudBtn = document.getElementById('btn-bgm');
+                const lobbyText = document.getElementById('lobby-bgm-text');
+                if (hudBtn) {
+                    hudBtn.innerHTML = this.bgmEnabled
+                        ? '<span>🎵</span> <span class="hidden sm:inline text-[10px]">BGM ON</span>'
+                        : '<span>🔕</span> <span class="hidden sm:inline text-[10px]">BGM OFF</span>';
+                    hudBtn.className = this.bgmEnabled
+                        ? 'px-2.5 py-2 rounded-lg bg-indigo-900/90 hover:bg-indigo-800 border border-indigo-400/60 text-indigo-200 text-xs font-orbitron font-bold transition flex items-center gap-1'
+                        : 'px-2.5 py-2 rounded-lg bg-slate-800/90 hover:bg-slate-700 border border-slate-600 text-slate-400 text-xs font-orbitron font-bold transition flex items-center gap-1';
+                }
+                if (lobbyText) {
+                    lobbyText.textContent = (this.bgmPlaying && this.bgmEnabled) ? 'Musik Aktif (Klik Matikan)' : 'Tes Musik Game (BGM)';
+                }
+            },
+
+            startBGM(mode = 'action') {
+                this.bgmMode = mode;
+                if (!this.bgmEnabled) return;
+                this.init();
+                if (this.bgmIntervalId) clearInterval(this.bgmIntervalId);
+                this.bgmPlaying = true;
+                this.updateBGMButtonsUI();
+
+                // Sequencer 16-step dengan tempo 135 BPM (~112ms per 1/16 ketukan)
+                this.bgmIntervalId = setInterval(() => {
+                    if (!this.bgmEnabled || !this.ctx || this.ctx.state !== 'running') return;
+                    this.playBGMStep();
+                }, 115);
+            },
+
+            setBGMMode(mode) {
+                this.bgmMode = mode;
+                if (this.bgmEnabled && !this.bgmPlaying) {
+                    this.startBGM(mode);
+                }
+            },
+
+            stopBGM() {
+                if (this.bgmIntervalId) {
+                    clearInterval(this.bgmIntervalId);
+                    this.bgmIntervalId = null;
+                }
+                this.bgmPlaying = false;
+                this.updateBGMButtonsUI();
+            },
+
+            playBGMStep() {
+                const s = this.bgmStep % 16;
+                this.bgmStep++;
+
+                if (this.bgmMode === 'quiz') {
+                    // Mode Kuis: Musik Ambient Fokus & Tenang agar murid nyaman membaca literasi
+                    if (s % 2 === 0) {
+                        const note = this.quizPadPattern[(s / 2) % this.quizPadPattern.length];
+                        this.playTone(note, 'sine', 0.22, 0.035);
+                    }
+                    if (s === 0 || s === 8) {
+                        this.playTone(110, 'triangle', 0.35, 0.04);
+                    }
+                    return;
+                }
+
+                // Mode Action & Lobby: Musik Synthwave Pesawat Tempur Luar Angkasa
+                const volScale = this.bgmMode === 'lobby' ? 0.65 : 1.0;
+
+                // 1. Driving Synth Bassline
+                const bassFreq = this.bassPattern[s];
+                if (bassFreq) {
+                    this.playTone(bassFreq, 'sawtooth', 0.095, 0.038 * volScale, bassFreq * 0.98);
+                }
+
+                // 2. Melodic Space Arpeggio
+                const arpFreq = this.arpPattern[s];
+                if (arpFreq && (s % 2 === 0 || s === 7 || s === 15)) {
+                    this.playTone(arpFreq, 'triangle', 0.11, 0.042 * volScale);
+                }
+
+                // 3. Electronic Kick Drum pada ketukan 0, 4, 8, 12
+                if (s % 4 === 0) {
+                    this.playTone(135, 'sine', 0.11, 0.08 * volScale, 38);
+                }
+
+                // 4. Synth Snare / Hi-Hat Pulse pada ketukan off-beat (2, 6, 10, 14)
+                if (s % 4 === 2) {
+                    this.playNoiseHat(0.04, 0.025 * volScale);
+                }
+            },
+
+            playNoiseHat(duration = 0.04, vol = 0.025) {
+                try {
+                    if (!this.ctx) return;
+                    const bufferSize = this.ctx.sampleRate * duration;
+                    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                    const data = buffer.getChannelData(0);
+                    for (let i = 0; i < bufferSize; i++) {
+                        data[i] = Math.random() * 2 - 1;
+                    }
+                    const noise = this.ctx.createBufferSource();
+                    noise.buffer = buffer;
+
+                    const filter = this.ctx.createBiquadFilter();
+                    filter.type = 'highpass';
+                    filter.frequency.value = 5000;
+
+                    const gain = this.ctx.createGain();
+                    gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+
+                    noise.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    noise.start();
+                } catch (e) {}
+            },
+
+            playTone(freq, type, duration, vol = 0.12, slideFreq = null) {
+                if (this.muted && !this.bgmPlaying) return;
+                try {
+                    this.init();
+                    if (!this.ctx) return;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                    if (slideFreq) {
+                        osc.frequency.exponentialRampToValueAtTime(slideFreq, this.ctx.currentTime + duration);
+                    }
+                    gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + duration);
+                } catch (e) {
+                    // Abaikan jika browser memblokir autoplay audio
+                }
+            },
+
+            uiClick() {
+                if (this.muted) return;
+                this.playTone(880, 'sine', 0.05, 0.07, 1100);
+            },
+            laser(level = 1) {
+                if (this.muted) return;
+                const startFreq = 640 + (level * 32);
+                this.playTone(startFreq, 'sawtooth', 0.12, 0.075, 170);
+            },
+            weaponUpgrade() {
+                if (this.muted) return;
+                const notes = [440, 554.37, 659.25, 880];
+                notes.forEach((n, idx) => {
+                    setTimeout(() => this.playTone(n, 'triangle', 0.12, 0.13), idx * 65);
+                });
+            },
+            boxPickup() {
+                if (this.muted) return;
+                this.playTone(523.25, 'sine', 0.12, 0.15);
+                setTimeout(() => this.playTone(659.25, 'sine', 0.18, 0.15), 90);
+            },
+            correct() {
+                if (this.muted) return;
+                this.playTone(523.25, 'triangle', 0.12, 0.18);
+                setTimeout(() => this.playTone(659.25, 'triangle', 0.12, 0.18), 100);
+                setTimeout(() => this.playTone(783.99, 'triangle', 0.15, 0.18), 200);
+                setTimeout(() => this.playTone(1046.5, 'triangle', 0.3, 0.2), 300);
+            },
+            wrong() {
+                if (this.muted) return;
+                this.playTone(300, 'sawtooth', 0.2, 0.15, 190);
+                setTimeout(() => this.playTone(220, 'sawtooth', 0.32, 0.15, 140), 180);
+            },
+            hitObstacle() {
+                if (this.muted) return;
+                this.playTone(150, 'square', 0.22, 0.14, 55);
+            },
+            violation() {
+                if (this.muted) return;
+                this.playTone(440, 'sawtooth', 0.25, 0.2, 220);
+                setTimeout(() => this.playTone(440, 'sawtooth', 0.35, 0.2, 220), 280);
+            },
+            finish() {
+                if (this.muted) return;
+                const notes = [523.25, 659.25, 783.99, 1046.5, 783.99, 1046.5];
+                notes.forEach((n, idx) => {
+                    setTimeout(() => this.playTone(n, 'triangle', 0.22, 0.18), idx * 130);
+                });
+            }
+        };
+
+        /* ==========================================================================
+           BAGIAN 4: GAME.JS (STATE MACHINE, ENGINE LUAR ANGKASA, DAN INTEGRITAS)
+           ========================================================================== */
+        const GAME_STATES = {
+            START: 'START',
+            PLAYING: 'PLAYING',
+            PAUSED: 'PAUSED',
+            QUESTION: 'QUESTION',
+            FEEDBACK: 'FEEDBACK',
+            GAME_OVER: 'GAME_OVER',
+            SECURITY_VIOLATION: 'SECURITY_VIOLATION'
+        };
+
+        const GameApp = {
+            state: GAME_STATES.START,
+            canvas: null,
+            ctx: null,
+            width: 1280,
+            height: 720,
+
+            // Konfigurasi Guru
+            config: {
+                mode: 'assessment', // 'assessment' atau 'practice'
+                strictFullscreen: false,
+                classes: ['X - A', 'X - B'],
+                teacherPin: 'GURU10'
+            },
+
+            // Data Sesi Murid Aktif
+            session: {
+                name: '',
+                absen: '',
+                className: '',
+                score: 0,
+                startTime: 0,
+                endTime: 0,
+                answers: {}, // indeks soal -> { status: 'correct'|'wrong'|'timeout', studentAnswerText, points }
+                activeQuestionIndex: null,
+                questionLocked: false,
+                tempTF: [null, null, null], // State sementara untuk soal Benar/Salah (3 pernyataan)
+                tempMulti: [],              // State sementara untuk soal PG Kompleks (Maks 3)
+                pendingViolationMessage: null
+            },
+
+            // Timer Soal Aman dari Duplikasi
+            questionTimerId: null,
+            questionTimeLeft: 45,
+
+            // State Virtual Analog Joystick (untuk HP & PID)
+            joystick: {
+                active: false,
+                pointerId: null,
+                dx: 0, // -1 s/d 1
+                dy: 0  // -1 s/d 1
+            },
+
+            // Entitas Dunia Permainan (Lintasan Panjang)
+            world: {
+                trackLength: 14800,
+                cameraX: 0,
+                stars: [],
+                nebulae: [],
+                planets: [],
+                asteroids: [],
+                mines: [],
+                gravityZones: [],
+                missionBoxes: [],
+                lasers: [],
+                particles: [],
+                floatingTexts: [],
+                portalX: 14350
+            },
+
+            // Entitas Pesawat Tempur Pemain
+            ship: {
+                worldX: 220,
+                y: 360,
+                vx: 0,
+                vy: 0,
+                baseSpeed: 5.2,
+                radius: 26,
+                shieldFlash: 0,
+                fireCooldown: 0
+            },
+
+            // Status Input Keyboard & Sentuh
+            keys: {
+                up: false,
+                down: false,
+                left: false,
+                right: false,
+                fire: false
+            },
+
+            init() {
+                this.canvas = document.getElementById('gameCanvas');
+                this.ctx = this.canvas.getContext('2d');
+
+                this.loadTeacherConfig();
+                this.populateClassSelect();
+                this.resizeCanvas();
+                this.initBackgroundDecor();
+                this.setupInputListeners();
+                this.setupSecurityMonitors();
+
+                window.addEventListener('resize', () => this.resizeCanvas());
+
+                // Mulai loop animasi utama
+                requestAnimationFrame(() => this.gameLoop());
+            },
+
+            resizeCanvas() {
+                this.width = window.innerWidth;
+                this.height = window.innerHeight;
+                this.canvas.width = this.width;
+                this.canvas.height = this.height;
+                if (this.ship.y > this.height - 60) {
+                    this.ship.y = this.height / 2;
+                }
+            },
+
+            /* ----------------------------------------------------------------------
+               KONFIGURASI GURU & PENYIMPANAN LOKAL PROTOTIPE
+               ---------------------------------------------------------------------- */
+            loadTeacherConfig() {
+                try {
+                    const saved = localStorage.getItem('pesawat_algoritma_cfg_v2');
+                    if (saved) {
+                        const parsed = JSON.parse(saved);
+                        this.config = { ...this.config, ...parsed };
+                    }
+                } catch (e) {}
+                this.updateModeBadgeUI();
+            },
+
+            saveTeacherConfig() {
+                const modeEl = document.getElementById('cfg-mode');
+                const strictFsEl = document.getElementById('cfg-strict-fullscreen');
+                const classesEl = document.getElementById('cfg-classes');
+                const pinEl = document.getElementById('cfg-pin');
+
+                this.config.mode = modeEl.value;
+                this.config.strictFullscreen = strictFsEl.checked;
+                const rawClasses = classesEl.value.split(',').map(c => c.trim()).filter(Boolean);
+                if (rawClasses.length > 0) this.config.classes = rawClasses;
+                if (pinEl.value.trim()) this.config.teacherPin = pinEl.value.trim();
+
+                try {
+                    localStorage.setItem('pesawat_algoritma_cfg_v2', JSON.stringify(this.config));
+                } catch (e) {}
+
+                this.populateClassSelect();
+                this.updateModeBadgeUI();
+                this.closeTeacherModal();
+            },
+
+            updateModeBadgeUI() {
+                const startBadge = document.getElementById('active-mode-indicator');
+                const hudBadge = document.getElementById('hud-mode-badge');
+                if (this.config.mode === 'assessment') {
+                    startBadge.textContent = '🛡️ Mode Penilaian Aktif';
+                    startBadge.className = 'text-xs px-2.5 py-1 rounded-md bg-amber-500/20 border border-amber-400/50 text-amber-300 font-semibold';
+                    if (hudBadge) {
+                        hudBadge.textContent = 'PENILAIAN';
+                        hudBadge.className = 'text-[10px] font-orbitron px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/40';
+                    }
+                } else {
+                    startBadge.textContent = '🎯 Mode Latihan Aktif';
+                    startBadge.className = 'text-xs px-2.5 py-1 rounded-md bg-emerald-500/20 border border-emerald-400/50 text-emerald-300 font-semibold';
+                    if (hudBadge) {
+                        hudBadge.textContent = 'LATIHAN';
+                        hudBadge.className = 'text-[10px] font-orbitron px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40';
+                    }
+                }
+            },
+
+            populateClassSelect() {
+                const select = document.getElementById('input-class');
+                const currentVal = select.value;
+                select.innerHTML = '<option value="">-- Pilih Kelas --</option>';
+                this.config.classes.forEach(cls => {
+                    const opt = document.createElement('option');
+                    opt.value = cls;
+                    opt.textContent = cls;
+                    select.appendChild(opt);
+                });
+                if (this.config.classes.includes(currentVal)) {
+                    select.value = currentVal;
+                }
+            },
+
+            openTeacherModal() {
+                document.getElementById('cfg-mode').value = this.config.mode;
+                document.getElementById('cfg-strict-fullscreen').checked = this.config.strictFullscreen;
+                document.getElementById('cfg-classes').value = this.config.classes.join(', ');
+                document.getElementById('cfg-pin').value = this.config.teacherPin;
+                this.renderSessionLogs();
+                document.getElementById('modal-teacher').classList.remove('hidden');
+            },
+
+            closeTeacherModal() {
+                document.getElementById('modal-teacher').classList.add('hidden');
+            },
+
+            openDocsModal() {
+                document.getElementById('modal-docs').classList.remove('hidden');
+            },
+
+            closeDocsModal() {
+                document.getElementById('modal-docs').classList.add('hidden');
+            },
+
+            getStudentKey(name, absen, cls) {
+                return `${cls}_${absen}_${name.toLowerCase().trim()}`;
+            },
+
+            logSessionEvent(statusText) {
+                try {
+                    const logs = JSON.parse(localStorage.getItem('pesawat_algoritma_logs') || '[]');
+                    logs.unshift({
+                        time: new Date().toLocaleTimeString('id-ID'),
+                        student: `${this.session.name} (${this.session.className} / ${this.session.absen})`,
+                        score: this.session.score,
+                        status: statusText
+                    });
+                    localStorage.setItem('pesawat_algoritma_logs', JSON.stringify(logs.slice(0, 30)));
+                } catch (e) {}
+            },
+
+            renderSessionLogs() {
+                const container = document.getElementById('cfg-session-logs');
+                try {
+                    const logs = JSON.parse(localStorage.getItem('pesawat_algoritma_logs') || '[]');
+                    if (logs.length === 0) {
+                        container.innerHTML = 'Belum ada riwayat sesi tercatat.';
+                        return;
+                    }
+                    container.innerHTML = logs.map(l =>
+                        `<div class="py-1 border-b border-slate-800 flex justify-between gap-2">
+                            <span>[${l.time}] <strong>${l.student}</strong> — ${l.status}</span>
+                            <span class="text-sky-300 font-bold">${l.score} pts</span>
+                        </div>`
+                    ).join('');
+                } catch (e) {
+                    container.innerHTML = 'Gagal memuat riwayat.';
+                }
+            },
+
+            resetCompletedSessions() {
+                try {
+                    localStorage.removeItem('pesawat_algoritma_locked_students');
+                    localStorage.removeItem('pesawat_algoritma_logs');
+                } catch (e) {}
+                this.renderSessionLogs();
+            },
+
+            /* ----------------------------------------------------------------------
+               PEMBANGUNAN DUNIA GALAKSI, RINTANGAN, DAN 15 KOTAK MISI
+               ---------------------------------------------------------------------- */
+            initBackgroundDecor() {
+                this.world.stars = [];
+                for (let i = 0; i < 160; i++) {
+                    this.world.stars.push({
+                        x: Math.random() * 2000,
+                        y: Math.random() * 1200,
+                        size: Math.random() * 2.2 + 0.5,
+                        parallax: Math.random() * 0.45 + 0.08,
+                        alpha: Math.random() * 0.6 + 0.35
+                    });
+                }
+
+                this.world.nebulae = [
+                    { x: 400, y: 200, r: 280, color: 'rgba(124, 58, 237, 0.14)' },
+                    { x: 1100, y: 500, r: 340, color: 'rgba(2, 132, 199, 0.14)' },
+                    { x: 1850, y: 260, r: 300, color: 'rgba(236, 72, 153, 0.10)' }
+                ];
+
+                this.world.planets = [
+                    { worldX: 1400, yRatio: 0.22, r: 58, color1: '#38bdf8', color2: '#1e3a8a', ring: true },
+                    { worldX: 4600, yRatio: 0.76, r: 72, color1: '#f59e0b', color2: '#78350f', ring: false },
+                    { worldX: 8200, yRatio: 0.24, r: 64, color1: '#a855f7', color2: '#3b0764', ring: true },
+                    { worldX: 11800, yRatio: 0.72, r: 80, color1: '#10b981', color2: '#064e3b', ring: false }
+                ];
+            },
+
+            buildMissionWorld() {
+                this.world.missionBoxes = [];
+                this.world.asteroids = [];
+                this.world.mines = [];
+                this.world.gravityZones = [];
+                this.world.lasers = [];
+                this.world.particles = [];
+                this.world.floatingTexts = [];
+
+                // Tempatkan 15 Kotak Misi secara merata sepanjang lintasan (900px s/d 13500px)
+                for (let i = 0; i < 15; i++) {
+                    const boxX = 900 + i * 900;
+                    const yPatterns = [0.28, 0.5, 0.72, 0.35, 0.65];
+                    const boxYRatio = yPatterns[i % yPatterns.length];
+
+                    this.world.missionBoxes.push({
+                        index: i,
+                        questionId: QUESTION_BANK[i].id,
+                        worldX: boxX,
+                        yRatio: boxYRatio,
+                        radius: 34,
+                        completed: false,
+                        result: null, // 'correct' | 'wrong' | 'timeout'
+                        pulse: i * 0.6
+                    });
+
+                    // Tambahkan asteroid & meteor di antara kotak misi (pastikan tidak menutupi kotak misi)
+                    for (let a = 0; a < 4; a++) {
+                        const astX = boxX - 620 + a * 145 + (Math.random() * 50 - 25);
+                        if (Math.abs(astX - boxX) < 130) continue;
+                        this.world.asteroids.push({
+                            worldX: astX,
+                            y: 90 + Math.random() * (Math.max(420, this.height - 180)),
+                            vy: (Math.random() - 0.5) * 1.4,
+                            radius: 22 + Math.random() * 18,
+                            rot: Math.random() * Math.PI * 2,
+                            rotSpeed: (Math.random() - 0.5) * 0.03,
+                            hp: 2
+                        });
+                    }
+
+                    // Tambahkan ranjau luar angkasa fiktif tiap beberapa segmen
+                    if (i % 2 === 1) {
+                        this.world.mines.push({
+                            worldX: boxX - 420,
+                            baseYRatio: (i % 4 === 1) ? 0.35 : 0.65,
+                            phase: Math.random() * Math.PI * 2,
+                            radius: 20
+                        });
+                    }
+
+                    // Tambahkan pusaran medan gravitasi visual
+                    if (i % 3 === 2) {
+                        this.world.gravityZones.push({
+                            worldX: boxX - 260,
+                            yRatio: 0.5,
+                            radius: 110,
+                            angle: 0
+                        });
+                    }
+                }
+
+                this.world.portalX = 14350;
+            },
+
+            /* ----------------------------------------------------------------------
+               MEMULAI MISI & VALIDASI IDENTITAS
+               ---------------------------------------------------------------------- */
+            startMission() {
+                const nameInput = document.getElementById('input-name').value.trim();
+                const absenInput = document.getElementById('input-absen').value.trim();
+                const classInput = document.getElementById('input-class').value.trim();
+                const errorBox = document.getElementById('form-error');
+
+                if (!nameInput || !absenInput || !classInput) {
+                    errorBox.textContent = '⚠️ Harap lengkapi Nama Lengkap, Nomor Absen, dan Kelas sebelum memulai misi!';
+                    errorBox.classList.remove('hidden');
+                    AudioFX.wrong();
+                    return;
+                }
+
+                // Cek jika Mode Penilaian dan murid ini sudah pernah dikunci karena selesai/pelanggaran
+                const studentKey = this.getStudentKey(nameInput, absenInput, classInput);
+                if (this.config.mode === 'assessment') {
+                    try {
+                        const lockedList = JSON.parse(localStorage.getItem('pesawat_algoritma_locked_students') || '[]');
+                        if (lockedList.includes(studentKey)) {
+                            errorBox.innerHTML = '🔒 Sesi penilaian untuk identitas ini telah tercatat/dibatalkan sebelumnya. Buka <strong>Pengaturan Guru</strong> untuk mereset kunci sesi atau beralih ke Mode Latihan.';
+                            errorBox.classList.remove('hidden');
+                            AudioFX.wrong();
+                            return;
+                        }
+                    } catch (e) {}
+                }
+
+                errorBox.classList.add('hidden');
+                AudioFX.init();
+                AudioFX.boxPickup();
+                AudioFX.startBGM('action');
+
+                // Inisialisasi State Sesi Baru
+                this.session = {
+                    name: nameInput,
+                    absen: absenInput,
+                    className: classInput,
+                    score: 0,
+                    startTime: Date.now(),
+                    endTime: 0,
+                    answers: {},
+                    activeQuestionIndex: null,
+                    questionLocked: false,
+                    tempTF: [null, null, null],
+                    tempMulti: [],
+                    pendingViolationMessage: null
+                };
+
+                // Reset Posisi Pesawat & Dunia
+                this.ship.worldX = 220;
+                this.ship.y = this.height / 2;
+                this.ship.vx = 0;
+                this.ship.vy = 0;
+                this.ship.shieldFlash = 0;
+                this.world.cameraX = 0;
+
+                this.buildMissionWorld();
+                this.updateHUD();
+                this.renderMissionIconsHUD();
+
+                // Tampilkan HUD & Sembunyikan Layar Start
+                document.getElementById('screen-start').classList.add('hidden');
+                document.getElementById('screen-result').classList.add('hidden');
+                document.getElementById('hud-container').classList.remove('hidden');
+                document.getElementById('touch-controls').classList.remove('hidden');
+
+                // Aktifkan Fullscreen jika dicentang
+                const autoFs = document.getElementById('check-auto-fullscreen').checked;
+                if (autoFs && !document.fullscreenElement) {
+                    this.requestFullscreenSafe();
+                }
+
+                this.state = GAME_STATES.PLAYING;
+            },
+
+            /* ----------------------------------------------------------------------
+               UPDATE HUD, SENJATA AKTIF, & 15 INDIKATOR PROGRES MISI
+               ---------------------------------------------------------------------- */
+            getCurrentWeaponStyle() {
+                const answeredCount = Object.keys(this.session.answers).length;
+                const idx = Math.min(14, answeredCount);
+                return WEAPON_STYLES[idx];
+            },
+
+            updateHUD() {
+                document.getElementById('hud-name').textContent = this.session.name.toUpperCase();
+                document.getElementById('hud-class').textContent = `Kelas: ${this.session.className}`;
+                document.getElementById('hud-absen').textContent = `Absen: ${this.session.absen}`;
+                document.getElementById('hud-score').textContent = this.session.score;
+
+                const answeredCount = Object.keys(this.session.answers).length;
+                document.getElementById('hud-progress-text').textContent = `${answeredCount} / 15`;
+
+                // Update Nama & Warna Peluru Aktif di HUD dan Tombol Tembak
+                const weapon = this.getCurrentWeaponStyle();
+                const weaponEl = document.getElementById('hud-weapon-name');
+                if (weaponEl) {
+                    weaponEl.textContent = weapon.name;
+                    weaponEl.style.color = weapon.color;
+                }
+                const fireSub = document.getElementById('btn-fire-sub');
+                if (fireSub) {
+                    fireSub.textContent = `Peluru Lv.${weapon.level}`;
+                }
+
+                const hintEl = document.getElementById('hud-status-hint');
+                if (answeredCount < 15) {
+                    const nextIdx = this.world.missionBoxes.findIndex(b => !b.completed);
+                    const nextNum = nextIdx !== -1 ? nextIdx + 1 : answeredCount + 1;
+                    hintEl.textContent = `📡 Target: Kotak Misi #${nextNum} | Senjata Aktif: ${weapon.name}`;
+                } else {
+                    hintEl.textContent = `🌟 Seluruh 15 Misi Selesai! Kemudikan Sukhoi menuju PORTAL FINIS di kanan!`;
+                }
+            },
+
+            renderMissionIconsHUD() {
+                const container = document.getElementById('hud-mission-icons');
+                container.innerHTML = '';
+                for (let i = 0; i < 15; i++) {
+                    const ans = this.session.answers[i];
+                    const badge = document.createElement('div');
+                    let colorClass = 'bg-slate-800 text-slate-400 border-slate-600';
+                    let symbol = i + 1;
+                    let titleText = `Misi ${i + 1}/15 — belum selesai`;
+
+                    if (ans) {
+                        if (ans.status === 'correct') {
+                            colorClass = 'bg-emerald-500/30 text-emerald-300 border-emerald-400 font-bold';
+                            symbol = '✓';
+                            titleText = `Misi ${i + 1}/15 — 10 poin`;
+                        } else if (ans.status === 'wrong') {
+                            colorClass = 'bg-rose-500/30 text-rose-300 border-rose-400 font-bold';
+                            symbol = '✕';
+                            titleText = `Misi ${i + 1}/15 — 0 poin`;
+                        } else {
+                            colorClass = 'bg-amber-500/30 text-amber-300 border-amber-400 font-bold';
+                            symbol = '⏱';
+                            titleText = `Misi ${i + 1}/15 — 0 poin (Waktu habis)`;
+                        }
+                    }
+
+                    badge.className = `w-6 h-6 rounded-md border text-[11px] font-orbitron flex items-center justify-center transition ${colorClass}`;
+                    badge.title = titleText;
+                    badge.textContent = symbol;
+                    container.appendChild(badge);
+                }
+            },
+
+            /* ----------------------------------------------------------------------
+               MEKANISME KOTAK MISI & PANEL KUIS 15 SOAL (3 TIPE ASESMEN LITERASI)
+               ---------------------------------------------------------------------- */
+            triggerMissionBox(boxIndex) {
+                const box = this.world.missionBoxes[boxIndex];
+                if (!box || box.completed) return;
+                if (this.session.answers[boxIndex]) return; // Cegah soal muncul lebih dari sekali
+
+                // Pastikan berurutan: jika ada kotak sebelumnya yang terlewat, ingatkan pemain
+                const firstUnfinished = this.world.missionBoxes.findIndex(b => !b.completed);
+                if (firstUnfinished !== -1 && firstUnfinished < boxIndex) {
+                    this.addFloatingText(box.worldX, box.yRatio * this.height - 40, `Selesaikan Misi #${firstUnfinished + 1} dulu!`, '#f59e0b');
+                    return;
+                }
+
+                this.state = GAME_STATES.QUESTION;
+                this.resetControlKeys();
+                AudioFX.boxPickup();
+                AudioFX.setBGMMode('quiz'); // Ubah BGM ke mode tenang/fokus saat menjawab soal
+
+                this.session.activeQuestionIndex = boxIndex;
+                this.session.questionLocked = false;
+                this.session.tempTF = [null, null, null];
+                this.session.tempMulti = [];
+
+                const qData = QUESTION_BANK[boxIndex];
+                document.getElementById('q-number-badge').textContent = `KOTAK MISI ${boxIndex + 1} / 15`;
+                document.getElementById('q-topic').textContent = `Materi: ${qData.topic}`;
+                document.getElementById('q-current-score').textContent = `${this.session.score} Poin`;
+                document.getElementById('q-literacy').textContent = qData.literacy;
+                document.getElementById('q-text').textContent = qData.question;
+
+                const typeBadge = document.getElementById('q-type-badge');
+                const instructionEl = document.getElementById('q-instruction');
+                const submitWrapper = document.getElementById('q-submit-wrapper');
+                const lockBtn = document.getElementById('btn-lock-answer');
+
+                // Sembunyikan feedback & nonaktifkan tombol lanjut
+                document.getElementById('q-feedback-box').classList.add('hidden');
+                document.getElementById('btn-continue-mission').disabled = true;
+
+                const optionsContainer = document.getElementById('q-options-container');
+                optionsContainer.innerHTML = '';
+
+                if (qData.type === 'single') {
+                    // TIPE 1: Pilihan Ganda A - E (Soal 1-5)
+                    typeBadge.textContent = 'PILIHAN GANDA (A - E)';
+                    typeBadge.className = 'text-[10px] px-2 py-0.5 rounded-full bg-sky-500/20 border border-sky-400/40 text-sky-200 font-bold';
+                    instructionEl.textContent = 'Petunjuk: Klik langsung satu pilihan jawaban (A, B, C, D, atau E) yang paling tepat!';
+                    submitWrapper.classList.add('hidden');
+
+                    const letters = ['A', 'B', 'C', 'D', 'E'];
+                    qData.options.forEach((optText, idx) => {
+                        const btn = document.createElement('button');
+                        btn.className = 'option-btn w-full p-3 rounded-xl flex items-center gap-3 text-xs sm:text-sm text-slate-100 font-medium';
+                        btn.innerHTML = `
+                            <span class="w-7 h-7 rounded-lg bg-sky-500/20 border border-sky-400/50 font-orbitron font-bold text-sky-300 flex items-center justify-center shrink-0">
+                                ${letters[idx]}
+                            </span>
+                            <span class="flex-1">${optText}</span>
+                        `;
+                        btn.onclick = () => this.submitSingleChoice(idx);
+                        optionsContainer.appendChild(btn);
+                    });
+
+                } else if (qData.type === 'tf3') {
+                    // TIPE 2: Benar / Salah 3 Pernyataan (Soal 6-10)
+                    typeBadge.textContent = 'BENAR / SALAH (3 PERNYATAAN)';
+                    typeBadge.className = 'text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-200 font-bold';
+                    instructionEl.textContent = 'Petunjuk: Pilih BENAR atau SALAH pada ketiga pernyataan di bawah, lalu klik tombol KUNCI JAWABAN SAYA.';
+                    submitWrapper.classList.remove('hidden');
+                    lockBtn.disabled = true;
+
+                    qData.statements.forEach((stmtText, sIdx) => {
+                        const row = document.createElement('div');
+                        row.id = `tf-row-${sIdx}`;
+                        row.className = 'p-3 rounded-xl bg-slate-900/90 border border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5';
+                        row.innerHTML = `
+                            <div class="text-xs sm:text-sm text-slate-100 flex-1">
+                                <span class="font-orbitron font-bold text-sky-300 mr-1">#${sIdx + 1}.</span> ${stmtText}
+                            </div>
+                            <div class="flex items-center gap-2 shrink-0">
+                                <button type="button" id="tf-btn-${sIdx}-true" onclick="GameApp.selectTF(${sIdx}, true)"
+                                    class="px-3.5 py-1.5 rounded-lg border border-slate-600 bg-slate-800 text-xs font-orbitron font-bold text-slate-300 hover:border-emerald-400 transition">
+                                    BENAR
+                                </button>
+                                <button type="button" id="tf-btn-${sIdx}-false" onclick="GameApp.selectTF(${sIdx}, false)"
+                                    class="px-3.5 py-1.5 rounded-lg border border-slate-600 bg-slate-800 text-xs font-orbitron font-bold text-slate-300 hover:border-rose-400 transition">
+                                    SALAH
+                                </button>
+                            </div>
+                        `;
+                        optionsContainer.appendChild(row);
+                    });
+
+                } else if (qData.type === 'multi') {
+                    // TIPE 3: Pilihan Ganda Kompleks A - E Maksimal 3 Jawaban (Soal 11-15)
+                    typeBadge.textContent = 'PG KOMPLEKS (MAKS 3 JAWABAN)';
+                    typeBadge.className = 'text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-200 font-bold';
+                    instructionEl.textContent = 'Petunjuk: Pilih maksimal 3 jawaban yang benar (A - E), lalu klik tombol KUNCI JAWABAN SAYA.';
+                    submitWrapper.classList.remove('hidden');
+                    lockBtn.disabled = true;
+
+                    const letters = ['A', 'B', 'C', 'D', 'E'];
+                    qData.options.forEach((optText, idx) => {
+                        const btn = document.createElement('button');
+                        btn.id = `multi-btn-${idx}`;
+                        btn.type = 'button';
+                        btn.className = 'option-btn w-full p-3 rounded-xl flex items-center gap-3 text-xs sm:text-sm text-slate-100 font-medium';
+                        btn.innerHTML = `
+                            <span id="multi-check-${idx}" class="w-6 h-6 rounded-md bg-slate-800 border border-slate-500 flex items-center justify-center text-xs text-transparent shrink-0">
+                                ✓
+                            </span>
+                            <span class="w-7 h-7 rounded-lg bg-sky-500/20 border border-sky-400/50 font-orbitron font-bold text-sky-300 flex items-center justify-center shrink-0">
+                                ${letters[idx]}
+                            </span>
+                            <span class="flex-1">${optText}</span>
+                        `;
+                        btn.onclick = () => this.toggleMultiOption(idx);
+                        optionsContainer.appendChild(btn);
+                    });
+                }
+
+                document.getElementById('modal-question').classList.remove('hidden');
+                this.startQuestionTimer();
+            },
+
+            selectTF(stmtIndex, val) {
+                if (this.state !== GAME_STATES.QUESTION || this.session.questionLocked) return;
+                AudioFX.uiClick();
+                this.session.tempTF[stmtIndex] = val;
+
+                const btnTrue = document.getElementById(`tf-btn-${stmtIndex}-true`);
+                const btnFalse = document.getElementById(`tf-btn-${stmtIndex}-false`);
+                if (val === true) {
+                    btnTrue.className = 'px-3.5 py-1.5 rounded-lg border-2 border-emerald-400 bg-emerald-600/40 text-xs font-orbitron font-bold text-white shadow-md shadow-emerald-500/30';
+                    btnFalse.className = 'px-3.5 py-1.5 rounded-lg border border-slate-600 bg-slate-800 text-xs font-orbitron font-bold text-slate-400';
+                } else {
+                    btnFalse.className = 'px-3.5 py-1.5 rounded-lg border-2 border-rose-400 bg-rose-600/40 text-xs font-orbitron font-bold text-white shadow-md shadow-rose-500/30';
+                    btnTrue.className = 'px-3.5 py-1.5 rounded-lg border border-slate-600 bg-slate-800 text-xs font-orbitron font-bold text-slate-400';
+                }
+
+                // Aktifkan tombol kunci jika ke-3 pernyataan sudah dipilih
+                const allFilled = this.session.tempTF.every(v => v !== null);
+                document.getElementById('btn-lock-answer').disabled = !allFilled;
+            },
+
+            toggleMultiOption(idx) {
+                if (this.state !== GAME_STATES.QUESTION || this.session.questionLocked) return;
+                const pos = this.session.tempMulti.indexOf(idx);
+                if (pos !== -1) {
+                    this.session.tempMulti.splice(pos, 1);
+                    AudioFX.uiClick();
+                } else {
+                    if (this.session.tempMulti.length >= 3) {
+                        // Maksimal 3 pilihan
+                        AudioFX.wrong();
+                        return;
+                    }
+                    this.session.tempMulti.push(idx);
+                    AudioFX.uiClick();
+                }
+
+                // Perbarui tampilan visual checkbox
+                for (let i = 0; i < 5; i++) {
+                    const btn = document.getElementById(`multi-btn-${i}`);
+                    const chk = document.getElementById(`multi-check-${i}`);
+                    if (!btn || !chk) continue;
+                    if (this.session.tempMulti.includes(i)) {
+                        btn.classList.add('border-sky-400', 'bg-sky-900/50');
+                        chk.className = 'w-6 h-6 rounded-md bg-sky-500 border border-white flex items-center justify-center text-xs text-white font-bold shrink-0';
+                    } else {
+                        btn.classList.remove('border-sky-400', 'bg-sky-900/50');
+                        chk.className = 'w-6 h-6 rounded-md bg-slate-800 border border-slate-500 flex items-center justify-center text-xs text-transparent shrink-0';
+                    }
+                }
+
+                document.getElementById('btn-lock-answer').disabled = (this.session.tempMulti.length === 0);
+            },
+
+            startQuestionTimer() {
+                this.clearQuestionTimer();
+                this.questionTimeLeft = 45;
+                this.updateTimerUI();
+
+                this.questionTimerId = setInterval(() => {
+                    if (this.state !== GAME_STATES.QUESTION) {
+                        this.clearQuestionTimer();
+                        return;
+                    }
+                    this.questionTimeLeft--;
+                    this.updateTimerUI();
+
+                    if (this.questionTimeLeft <= 0) {
+                        this.clearQuestionTimer();
+                        this.handleQuestionTimeout();
+                    }
+                }, 1000);
+            },
+
+            clearQuestionTimer() {
+                if (this.questionTimerId !== null) {
+                    clearInterval(this.questionTimerId);
+                    this.questionTimerId = null;
+                }
+            },
+
+            updateTimerUI() {
+                const timerText = document.getElementById('q-timer-text');
+                const timerBar = document.getElementById('q-timer-bar');
+                timerText.textContent = `${this.questionTimeLeft}d`;
+                const pct = Math.max(0, (this.questionTimeLeft / 45) * 100);
+                timerBar.style.width = `${pct}%`;
+
+                if (this.questionTimeLeft <= 10) {
+                    timerText.className = 'font-orbitron font-black text-base sm:text-lg text-rose-400 animate-pulse';
+                } else {
+                    timerText.className = 'font-orbitron font-black text-base sm:text-lg text-white';
+                }
+            },
+
+            submitSingleChoice(selectedIndex) {
+                if (this.state !== GAME_STATES.QUESTION || this.session.questionLocked) return;
+                const qIndex = this.session.activeQuestionIndex;
+                if (qIndex === null || this.session.answers[qIndex]) return;
+
+                const qData = QUESTION_BANK[qIndex];
+                const letters = ['A', 'B', 'C', 'D', 'E'];
+                const isCorrect = (selectedIndex === qData.correctIndex);
+                const studentText = `${letters[selectedIndex]}. ${qData.options[selectedIndex]}`;
+
+                // Highlight tombol pilihan ganda A-E
+                const optionButtons = document.querySelectorAll('#q-options-container .option-btn');
+                optionButtons.forEach((btn, idx) => {
+                    btn.disabled = true;
+                    if (idx === qData.correctIndex) {
+                        btn.classList.add('correct');
+                    } else if (idx === selectedIndex && !isCorrect) {
+                        btn.classList.add('wrong');
+                    }
+                });
+
+                this.finalizeQuestionEvaluation(qIndex, isCorrect, studentText);
+            },
+
+            lockComplexOrTF() {
+                if (this.state !== GAME_STATES.QUESTION || this.session.questionLocked) return;
+                const qIndex = this.session.activeQuestionIndex;
+                if (qIndex === null || this.session.answers[qIndex]) return;
+
+                const qData = QUESTION_BANK[qIndex];
+                document.getElementById('btn-lock-answer').disabled = true;
+
+                if (qData.type === 'tf3') {
+                    if (this.session.tempTF.some(v => v === null)) return;
+                    const isCorrect = qData.correctTF.every((val, idx) => val === this.session.tempTF[idx]);
+                    const studentText = this.session.tempTF.map((v, idx) => `#${idx + 1}:${v ? 'Benar' : 'Salah'}`).join(', ');
+
+                    // Kunci dan beri warna baris pernyataan
+                    qData.correctTF.forEach((corrVal, idx) => {
+                        const row = document.getElementById(`tf-row-${idx}`);
+                        const bTrue = document.getElementById(`tf-btn-${idx}-true`);
+                        const bFalse = document.getElementById(`tf-btn-${idx}-false`);
+                        if (bTrue) bTrue.disabled = true;
+                        if (bFalse) bFalse.disabled = true;
+                        if (row) {
+                            const userMatch = (this.session.tempTF[idx] === corrVal);
+                            row.classList.add(userMatch ? 'border-emerald-400' : 'border-rose-400');
+                        }
+                    });
+
+                    this.finalizeQuestionEvaluation(qIndex, isCorrect, studentText);
+
+                } else if (qData.type === 'multi') {
+                    if (this.session.tempMulti.length === 0) return;
+                    const sortedUser = [...this.session.tempMulti].sort((a, b) => a - b);
+                    const sortedKey = [...qData.correctIndices].sort((a, b) => a - b);
+                    const isCorrect = (sortedUser.length === sortedKey.length) && sortedUser.every((v, idx) => v === sortedKey[idx]);
+
+                    const letters = ['A', 'B', 'C', 'D', 'E'];
+                    const studentText = sortedUser.map(i => letters[i]).join(', ');
+
+                    for (let i = 0; i < 5; i++) {
+                        const btn = document.getElementById(`multi-btn-${i}`);
+                        if (!btn) continue;
+                        btn.disabled = true;
+                        if (qData.correctIndices.includes(i)) {
+                            btn.classList.add('correct');
+                        } else if (sortedUser.includes(i)) {
+                            btn.classList.add('wrong');
+                        }
+                    }
+
+                    this.finalizeQuestionEvaluation(qIndex, isCorrect, `Pilihan: ${studentText}`);
+                }
+            },
+
+            finalizeQuestionEvaluation(qIndex, isCorrect, studentAnswerText) {
+                this.session.questionLocked = true;
+                this.state = GAME_STATES.FEEDBACK;
+                this.clearQuestionTimer();
+
+                const qData = QUESTION_BANK[qIndex];
+                const earnedPoints = isCorrect ? 10 : 0;
+
+                this.session.answers[qIndex] = {
+                    status: isCorrect ? 'correct' : 'wrong',
+                    studentAnswerText: studentAnswerText,
+                    points: earnedPoints
+                };
+
+                this.recalculateTotalScore();
+
+                const box = this.world.missionBoxes[qIndex];
+                if (box) {
+                    box.completed = true;
+                    box.result = isCorrect ? 'correct' : 'wrong';
+                }
+
+                const feedbackBox = document.getElementById('q-feedback-box');
+                const feedbackStatus = document.getElementById('q-feedback-status');
+                const feedbackExp = document.getElementById('q-feedback-explanation');
+
+                feedbackBox.classList.remove('hidden');
+                if (isCorrect) {
+                    AudioFX.correct();
+                    feedbackBox.className = 'mt-3.5 p-3.5 rounded-xl border bg-emerald-950/70 border-emerald-400/60';
+                    feedbackStatus.className = 'font-orbitron font-bold text-xs sm:text-sm text-emerald-300 mb-1';
+                    feedbackStatus.textContent = '🌟 HEBAT! JAWABAN BENAR +10 POIN';
+                } else {
+                    AudioFX.wrong();
+                    feedbackBox.className = 'mt-3.5 p-3.5 rounded-xl border bg-rose-950/70 border-rose-400/60';
+                    feedbackStatus.className = 'font-orbitron font-bold text-xs sm:text-sm text-rose-300 mb-1';
+                    feedbackStatus.textContent = '💡 BELUM TEPAT! POIN TIDAK BERTAMBAH';
+                }
+                feedbackExp.innerHTML = `<strong>Pembahasan:</strong> ${qData.explanation}`;
+
+                document.getElementById('q-current-score').textContent = `${this.session.score} Poin`;
+                document.getElementById('btn-continue-mission').disabled = false;
+
+                this.updateHUD();
+                this.renderMissionIconsHUD();
+            },
+
+            handleQuestionTimeout() {
+                if (this.session.questionLocked) return;
+                const qIndex = this.session.activeQuestionIndex;
+                if (qIndex === null || this.session.answers[qIndex]) return;
+
+                this.session.questionLocked = true;
+                this.state = GAME_STATES.FEEDBACK;
+                AudioFX.wrong();
+
+                const qData = QUESTION_BANK[qIndex];
+                this.session.answers[qIndex] = {
+                    status: 'timeout',
+                    studentAnswerText: 'Tidak Terjawab (Waktu Habis)',
+                    points: 0
+                };
+
+                this.recalculateTotalScore();
+
+                const box = this.world.missionBoxes[qIndex];
+                if (box) {
+                    box.completed = true;
+                    box.result = 'timeout';
+                }
+
+                // Nonaktifkan seluruh tombol input pada modal soal
+                const allButtons = document.querySelectorAll('#q-options-container button');
+                allButtons.forEach(b => b.disabled = true);
+                const lockBtn = document.getElementById('btn-lock-answer');
+                if (lockBtn) lockBtn.disabled = true;
+
+                const feedbackBox = document.getElementById('q-feedback-box');
+                const feedbackStatus = document.getElementById('q-feedback-status');
+                const feedbackExp = document.getElementById('q-feedback-explanation');
+
+                feedbackBox.classList.remove('hidden');
+                feedbackBox.className = 'mt-3.5 p-3.5 rounded-xl border bg-amber-950/70 border-amber-400/60';
+                feedbackStatus.className = 'font-orbitron font-bold text-xs sm:text-sm text-amber-300 mb-1';
+                feedbackStatus.textContent = '⏱️ WAKTU HABIS — NILAI 0';
+                feedbackExp.innerHTML = `<strong>Pembahasan:</strong> ${qData.explanation}`;
+
+                document.getElementById('btn-continue-mission').disabled = false;
+                this.updateHUD();
+                this.renderMissionIconsHUD();
+            },
+
+            recalculateTotalScore() {
+                let correctCount = 0;
+                Object.values(this.session.answers).forEach(ans => {
+                    if (ans.status === 'correct') correctCount++;
+                });
+                this.session.score = correctCount * 10;
+            },
+
+            continueAfterQuestion() {
+                if (this.state !== GAME_STATES.FEEDBACK || !this.session.questionLocked) return;
+                document.getElementById('modal-question').classList.add('hidden');
+                this.session.activeQuestionIndex = null;
+                this.state = GAME_STATES.PLAYING;
+
+                // Kembalikan BGM ke mode Action luar angkasa & bunyikan fanfare upgrade senjata
+                AudioFX.setBGMMode('action');
+                AudioFX.weaponUpgrade();
+
+                // Tampilkan notifikasi evolusi warna peluru baru
+                const newWeapon = this.getCurrentWeaponStyle();
+                this.addFloatingText(this.ship.worldX, this.ship.y - 45, `⚡ Peluru Baru Aktif: ${newWeapon.name}!`, newWeapon.color);
+                this.updateHUD();
+            },
+
+            /* ----------------------------------------------------------------------
+               PENYELESAIAN PERMAINAN & HALAMAN HASIL AKHIR
+               ---------------------------------------------------------------------- */
+            completeGameAtPortal() {
+                const totalCompleted = Object.keys(this.session.answers).length;
+                if (totalCompleted < 15) {
+                    this.addFloatingText(this.world.portalX, this.height / 2 - 50, `Selesaikan seluruh 15 Misi! (${totalCompleted}/15)`, '#f43f5e');
+                    this.ship.worldX = this.world.portalX - 90;
+                    return;
+                }
+
+                this.state = GAME_STATES.GAME_OVER;
+                this.session.endTime = Date.now();
+                this.clearQuestionTimer();
+                AudioFX.setBGMMode('lobby');
+                AudioFX.finish();
+
+                // Hitung statistik akhir
+                let correct = 0, wrong = 0, timeout = 0;
+                for (let i = 0; i < 15; i++) {
+                    const ans = this.session.answers[i];
+                    if (!ans || ans.status === 'timeout') timeout++;
+                    else if (ans.status === 'correct') correct++;
+                    else wrong++;
+                }
+
+                this.session.score = correct * 10;
+                const percent = Math.round((correct / 15) * 100);
+                const durationSec = Math.max(1, Math.floor((this.session.endTime - this.session.startTime) / 1000));
+                const mins = String(Math.floor(durationSec / 60)).padStart(2, '0');
+                const secs = String(durationSec % 60).padStart(2, '0');
+
+                // Tentukan peringkat / gelar pencapaian
+                let rankTitle = 'TARUNA GALAKSI';
+                let motivation = 'Tetap semangat! Setiap pilot hebat memulai dari latihan. Pelajari kembali pembahasan algoritma di bawah agar makin mahir!';
+                if (this.session.score >= 135) {
+                    rankTitle = '🏆 ACE PILOT';
+                    motivation = 'Luar biasa sempurna! Logika berpikir komputasional dan penyusunan algoritmamu sangat sistematis dan presisi!';
+                } else if (this.session.score >= 105) {
+                    rankTitle = '🌟 PILOT ELIT';
+                    motivation = 'Kerja bagus! Kamu sudah menguasai sebagian besar konsep urutan algoritma, flowchart, dan percabangan dengan sangat baik.';
+                } else if (this.session.score >= 75) {
+                    rankTitle = '🚀 PILOT ANDAL';
+                    motivation = 'Bagus! Dasar penyusunan algoritmamu sudah kuat. Perhatikan kembali ketelitian pada beberapa langkah logis.';
+                }
+
+                // Kunci sesi jika Mode Penilaian
+                if (this.config.mode === 'assessment') {
+                    try {
+                        const studentKey = this.getStudentKey(this.session.name, this.session.absen, this.session.className);
+                        const lockedList = JSON.parse(localStorage.getItem('pesawat_algoritma_locked_students') || '[]');
+                        if (!lockedList.includes(studentKey)) {
+                            lockedList.push(studentKey);
+                            localStorage.setItem('pesawat_algoritma_locked_students', JSON.stringify(lockedList));
+                        }
+                    } catch (e) {}
+                }
+                this.logSessionEvent('Selesai Misi');
+
+                // Render UI Hasil Akhir
+                document.getElementById('res-rank-title').textContent = rankTitle;
+                document.getElementById('res-motivation').textContent = motivation;
+                document.getElementById('res-name').textContent = this.session.name;
+                document.getElementById('res-absen').textContent = this.session.absen;
+                document.getElementById('res-class').textContent = this.session.className;
+                document.getElementById('res-duration').textContent = `${mins}m ${secs}d`;
+                document.getElementById('res-mode').textContent = this.config.mode === 'assessment' ? 'Penilaian Resmi' : 'Latihan Mandiri';
+
+                document.getElementById('res-score').textContent = this.session.score;
+                document.getElementById('res-correct').textContent = correct;
+                document.getElementById('res-wrong').textContent = wrong;
+                document.getElementById('res-timeout').textContent = timeout;
+                document.getElementById('res-percent').textContent = `${percent}%`;
+
+                this.renderAnswerSummaryList();
+
+                document.getElementById('hud-container').classList.add('hidden');
+                document.getElementById('touch-controls').classList.add('hidden');
+                document.getElementById('res-summary-container').classList.add('hidden');
+                document.getElementById('screen-result').classList.remove('hidden');
+            },
+
+            renderAnswerSummaryList() {
+                const listEl = document.getElementById('res-summary-list');
+                const letters = ['A', 'B', 'C', 'D', 'E'];
+                listEl.innerHTML = QUESTION_BANK.map((q, idx) => {
+                    const ans = this.session.answers[idx];
+                    const studentChoice = ans ? ans.studentAnswerText : 'Tidak Terjawab (Waktu Habis)';
+
+                    let correctChoice = '';
+                    if (q.type === 'single') {
+                        correctChoice = `${letters[q.correctIndex]}. ${q.options[q.correctIndex]}`;
+                    } else if (q.type === 'tf3') {
+                        correctChoice = q.correctTF.map((v, i) => `#${i + 1}:${v ? 'Benar' : 'Salah'}`).join(', ');
+                    } else if (q.type === 'multi') {
+                        correctChoice = `Pilihan: ${q.correctIndices.map(i => letters[i]).join(', ')}`;
+                    }
+
+                    let badge = '<span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-xs font-bold">WAKTU HABIS (0 Poin)</span>';
+                    if (ans && ans.status === 'correct') {
+                        badge = '<span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-xs font-bold">BENAR (+10 Poin)</span>';
+                    } else if (ans && ans.status === 'wrong') {
+                        badge = '<span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 text-xs font-bold">SALAH (0 Poin)</span>';
+                    }
+
+                    return `
+                        <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-700 text-xs space-y-1.5">
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <span class="font-orbitron font-bold text-sky-300">Soal ${idx + 1} — ${q.topic}</span>
+                                ${badge}
+                            </div>
+                            <p class="font-semibold text-white">${q.question}</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-1 text-slate-300 pt-1">
+                                <div><span class="text-slate-400">Jawabanmu:</span> <strong class="text-white">${studentChoice}</strong></div>
+                                <div><span class="text-slate-400">Kunci Jawaban:</span> <strong class="text-emerald-300">${correctChoice}</strong></div>
+                            </div>
+                            <p class="text-slate-300 bg-slate-950/70 p-2 rounded-lg border border-slate-800">
+                                <strong>Pembahasan:</strong> ${q.explanation}
+                            </p>
+                        </div>
+                    `;
+                }).join('');
+            },
+
+            toggleSummary() {
+                const box = document.getElementById('res-summary-container');
+                box.classList.toggle('hidden');
+            },
+
+            returnToHomeFromResult() {
+                document.getElementById('screen-result').classList.add('hidden');
+                document.getElementById('screen-start').classList.remove('hidden');
+                this.state = GAME_STATES.START;
+            },
+
+            /* ----------------------------------------------------------------------
+               KONTROL INPUT KEYBOARD & ANALOG VIRTUAL JOYSTICK (HP & PID)
+               ---------------------------------------------------------------------- */
+            setupInputListeners() {
+                window.addEventListener('keydown', (e) => {
+                    if (this.state !== GAME_STATES.PLAYING) return;
+                    switch (e.code) {
+                        case 'ArrowUp':
+                        case 'KeyW':
+                            this.keys.up = true; e.preventDefault(); break;
+                        case 'ArrowDown':
+                        case 'KeyS':
+                            this.keys.down = true; e.preventDefault(); break;
+                        case 'ArrowLeft':
+                        case 'KeyA':
+                            this.keys.left = true; e.preventDefault(); break;
+                        case 'ArrowRight':
+                        case 'KeyD':
+                            this.keys.right = true; e.preventDefault(); break;
+                        case 'Space':
+                            this.keys.fire = true; e.preventDefault(); break;
+                    }
+                });
+
+                window.addEventListener('keyup', (e) => {
+                    switch (e.code) {
+                        case 'ArrowUp':
+                        case 'KeyW':
+                            this.keys.up = false; break;
+                        case 'ArrowDown':
+                        case 'KeyS':
+                            this.keys.down = false; break;
+                        case 'ArrowLeft':
+                        case 'KeyA':
+                            this.keys.left = false; break;
+                        case 'ArrowRight':
+                        case 'KeyD':
+                            this.keys.right = false; break;
+                        case 'Space':
+                            this.keys.fire = false; break;
+                    }
+                });
+
+                // Inisialisasi Analog Virtual Joystick (Mendukung HP Touch & Pointer/Mouse pada PID)
+                const joyZone = document.getElementById('joystick-zone');
+                const joyKnob = document.getElementById('joystick-knob');
+
+                if (joyZone && joyKnob) {
+                    const maxRadius = 42;
+
+                    const updateJoystickPosition = (clientX, clientY) => {
+                        const rect = joyZone.getBoundingClientRect();
+                        const centerX = rect.left + rect.width / 2;
+                        const centerY = rect.top + rect.height / 2;
+                        let dx = clientX - centerX;
+                        let dy = clientY - centerY;
+                        const dist = Math.hypot(dx, dy);
+
+                        if (dist > maxRadius) {
+                            dx = (dx / dist) * maxRadius;
+                            dy = (dy / dist) * maxRadius;
+                        }
+
+                        joyKnob.style.transform = `translate(${dx}px, ${dy}px)`;
+                        this.joystick.dx = dx / maxRadius;
+                        this.joystick.dy = dy / maxRadius;
+                    };
+
+                    const resetJoystick = () => {
+                        this.joystick.active = false;
+                        this.joystick.pointerId = null;
+                        this.joystick.dx = 0;
+                        this.joystick.dy = 0;
+                        joyKnob.style.transform = `translate(0px, 0px)`;
+                    };
+
+                    // Pointer Events (Bekerja seragam untuk Layar Sentuh HP, Stylus, & Papan Interaktif Digital / PID)
+                    joyZone.addEventListener('pointerdown', (e) => {
+                        if (this.state !== GAME_STATES.PLAYING) return;
+                        e.preventDefault();
+                        this.joystick.active = true;
+                        this.joystick.pointerId = e.pointerId;
+                        if (joyZone.setPointerCapture) {
+                            try { joyZone.setPointerCapture(e.pointerId); } catch (err) {}
+                        }
+                        updateJoystickPosition(e.clientX, e.clientY);
+                    });
+
+                    joyZone.addEventListener('pointermove', (e) => {
+                        if (!this.joystick.active || e.pointerId !== this.joystick.pointerId) return;
+                        e.preventDefault();
+                        updateJoystickPosition(e.clientX, e.clientY);
+                    });
+
+                    joyZone.addEventListener('pointerup', (e) => {
+                        if (e.pointerId !== this.joystick.pointerId) return;
+                        e.preventDefault();
+                        resetJoystick();
+                    });
+
+                    joyZone.addEventListener('pointercancel', () => resetJoystick());
+                }
+
+                // Tombol Tembak Virtual (HP & PID)
+                const fireBtn = document.getElementById('btn-touch-fire');
+                if (fireBtn) {
+                    const startFire = (e) => { e.preventDefault(); if (this.state === GAME_STATES.PLAYING) this.keys.fire = true; };
+                    const endFire = (e) => { e.preventDefault(); this.keys.fire = false; };
+                    fireBtn.addEventListener('pointerdown', startFire);
+                    fireBtn.addEventListener('pointerup', endFire);
+                    fireBtn.addEventListener('pointercancel', endFire);
+                    fireBtn.addEventListener('pointerleave', endFire);
+                }
+            },
+
+            resetControlKeys() {
+                this.keys.up = false;
+                this.keys.down = false;
+                this.keys.left = false;
+                this.keys.right = false;
+                this.keys.fire = false;
+                this.joystick.active = false;
+                this.joystick.dx = 0;
+                this.joystick.dy = 0;
+                const joyKnob = document.getElementById('joystick-knob');
+                if (joyKnob) joyKnob.style.transform = `translate(0px, 0px)`;
+            },
+
+            /* ----------------------------------------------------------------------
+               UPDATE FISIKA, PERGERAKAN PESAWAT SUKHOI, PELURU BERAGAM & TABRAKAN
+               ---------------------------------------------------------------------- */
+            updateWorldPhysics() {
+                if (this.state !== GAME_STATES.PLAYING) return;
+
+                // Kecepatan pesawat dari Keyboard atau Analog Virtual Joystick (HP / PID)
+                let targetVx = 2.5; // Laju jelajah dasar ke kanan
+                let targetVy = 0;
+
+                if (this.joystick.active && (Math.abs(this.joystick.dx) > 0.08 || Math.abs(this.joystick.dy) > 0.08)) {
+                    targetVx = this.joystick.dx >= 0
+                        ? 2.5 + this.joystick.dx * 5.4
+                        : this.joystick.dx * 4.5;
+                    targetVy = this.joystick.dy * 6.0;
+                } else {
+                    if (this.keys.right) targetVx = 7.6;
+                    else if (this.keys.left) targetVx = -4.2;
+
+                    if (this.keys.up) targetVy = -5.8;
+                    if (this.keys.down) targetVy = 5.8;
+                }
+
+                this.ship.vx += (targetVx - this.ship.vx) * 0.18;
+                this.ship.vy += (targetVy - this.ship.vy) * 0.18;
+
+                // Pengaruh ringan dari Medan Gravitasi Visual
+                this.world.gravityZones.forEach(gz => {
+                    gz.angle += 0.04;
+                    const gy = gz.yRatio * this.height;
+                    const dx = gz.worldX - this.ship.worldX;
+                    const dy = gy - this.ship.y;
+                    const dist = Math.hypot(dx, dy);
+                    if (dist < gz.radius * 1.4 && dist > 10) {
+                        this.ship.vx += (dx / dist) * 0.22;
+                        this.ship.vy += (dy / dist) * 0.22;
+                    }
+                });
+
+                // Cegah pemain melewati Kotak Misi yang belum diselesaikan
+                const nextUnfinishedBox = this.world.missionBoxes.find(b => !b.completed);
+                const maxAllowedX = nextUnfinishedBox ? nextUnfinishedBox.worldX + 45 : this.world.portalX + 40;
+
+                this.ship.worldX = Math.max(100, Math.min(maxAllowedX, this.ship.worldX + this.ship.vx));
+                this.ship.y = Math.max(105, Math.min(this.height - 65, this.ship.y + this.ship.vy));
+
+                // Kamera mengikuti pesawat dengan mulus
+                const idealCamX = Math.max(0, this.ship.worldX - this.width * 0.24);
+                this.world.cameraX += (idealCamX - this.world.cameraX) * 0.12;
+
+                // Sistem Peluru Beragam (Berganti Warna & Pola Tembakan Sesuai Soal Aktif)
+                if (this.ship.fireCooldown > 0) this.ship.fireCooldown--;
+                if (this.keys.fire && this.ship.fireCooldown <= 0) {
+                    this.spawnWeaponProjectiles();
+                }
+
+                if (this.ship.shieldFlash > 0) this.ship.shieldFlash--;
+
+                // Partikel Mesin Kembar Sukhoi (Twin Afterburner)
+                if (Math.random() < 0.85) {
+                    const wStyle = this.getCurrentWeaponStyle();
+                    [-6, 6].forEach(offsetY => {
+                        this.world.particles.push({
+                            worldX: this.ship.worldX - 34,
+                            y: this.ship.y + offsetY + (Math.random() * 4 - 2),
+                            vx: -Math.random() * 3.5 - 1.5,
+                            vy: (Math.random() - 0.5) * 0.8,
+                            size: Math.random() * 3.5 + 1.8,
+                            color: Math.random() > 0.45 ? wStyle.color : '#f59e0b',
+                            life: 16
+                        });
+                    });
+                }
+
+                // Update Peluru Beragam & Tabrakan dengan Asteroid
+                for (let i = this.world.lasers.length - 1; i >= 0; i--) {
+                    const l = this.world.lasers[i];
+                    l.worldX += l.vx;
+                    l.y += (l.vy || 0);
+                    if (l.wave) {
+                        l.y += Math.sin(l.worldX * 0.04) * 2.5;
+                    }
+                    l.life--;
+                    if (l.life <= 0) {
+                        this.world.lasers.splice(i, 1);
+                        continue;
+                    }
+
+                    for (let j = this.world.asteroids.length - 1; j >= 0; j--) {
+                        const ast = this.world.asteroids[j];
+                        if (Math.hypot(l.worldX - ast.worldX, l.y - ast.y) < ast.radius + (l.size || 5) + 4) {
+                            ast.hp--;
+                            this.spawnExplosion(l.worldX, l.y, l.color || '#f59e0b', 7);
+                            this.world.lasers.splice(i, 1);
+                            if (ast.hp <= 0) {
+                                this.spawnExplosion(ast.worldX, ast.y, l.color || '#fb923c', 18);
+                                AudioFX.hitObstacle();
+                                this.world.asteroids.splice(j, 1);
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                // Update Asteroid & Deteksi Tabrakan dengan Pesawat
+                this.world.asteroids.forEach(ast => {
+                    ast.y += ast.vy;
+                    ast.rot += ast.rotSpeed;
+                    if (ast.y < 95 || ast.y > this.height - 60) ast.vy *= -1;
+
+                    const dist = Math.hypot(this.ship.worldX - ast.worldX, this.ship.y - ast.y);
+                    if (dist < this.ship.radius + ast.radius - 4 && this.ship.shieldFlash === 0) {
+                        this.ship.shieldFlash = 28;
+                        this.ship.vx = -4.5;
+                        AudioFX.hitObstacle();
+                        this.spawnExplosion(this.ship.worldX + 15, this.ship.y, '#38bdf8', 12);
+                        this.addFloatingText(this.ship.worldX, this.ship.y - 35, 'Perisai Menahan Asteroid!', '#38bdf8');
+                    }
+                });
+
+                // Update Ranjau Luar Angkasa & Tabrakan
+                this.world.mines.forEach(m => {
+                    m.phase += 0.04;
+                    const my = m.baseYRatio * this.height + Math.sin(m.phase) * 55;
+                    m.currentY = my;
+                    const dist = Math.hypot(this.ship.worldX - m.worldX, this.ship.y - my);
+                    if (dist < this.ship.radius + m.radius && this.ship.shieldFlash === 0) {
+                        this.ship.shieldFlash = 32;
+                        this.ship.vx = -5.5;
+                        AudioFX.hitObstacle();
+                        this.spawnExplosion(m.worldX, my, '#f43f5e', 15);
+                        this.addFloatingText(this.ship.worldX, this.ship.y - 35, 'Awas Ranjau Antariksa!', '#fb7185');
+                    }
+                });
+
+                // Deteksi Sentuhan Pesawat dengan Kotak Misi
+                for (let i = 0; i < this.world.missionBoxes.length; i++) {
+                    const box = this.world.missionBoxes[i];
+                    box.pulse += 0.06;
+                    if (box.completed) continue;
+                    const boxY = box.yRatio * this.height;
+                    const dist = Math.hypot(this.ship.worldX - box.worldX, this.ship.y - boxY);
+                    if (dist < this.ship.radius + box.radius + 6) {
+                        this.triggerMissionBox(i);
+                        break;
+                    }
+                }
+
+                // Deteksi Pesawat Mencapai Gerbang Portal Finis
+                const distToPortal = Math.abs(this.ship.worldX - this.world.portalX);
+                if (distToPortal < 55) {
+                    this.completeGameAtPortal();
+                }
+
+                // Update Partikel & Teks Melayang
+                for (let i = this.world.particles.length - 1; i >= 0; i--) {
+                    const p = this.world.particles[i];
+                    p.worldX += p.vx;
+                    p.y += p.vy;
+                    p.life--;
+                    if (p.life <= 0) this.world.particles.splice(i, 1);
+                }
+
+                for (let i = this.world.floatingTexts.length - 1; i >= 0; i--) {
+                    const ft = this.world.floatingTexts[i];
+                    ft.y -= 0.8;
+                    ft.life--;
+                    if (ft.life <= 0) this.world.floatingTexts.splice(i, 1);
+                }
+            },
+
+            spawnWeaponProjectiles() {
+                const wStyle = this.getCurrentWeaponStyle();
+                const baseX = this.ship.worldX + 40;
+                const baseY = this.ship.y;
+
+                if (wStyle.pattern === 'single') {
+                    this.world.lasers.push({
+                        worldX: baseX,
+                        y: baseY,
+                        vx: wStyle.speed,
+                        vy: 0,
+                        color: wStyle.color,
+                        core: wStyle.core,
+                        shape: wStyle.shape,
+                        size: wStyle.size,
+                        life: 60
+                    });
+                } else if (wStyle.pattern === 'twin') {
+                    [-11, 11].forEach(offsetY => {
+                        this.world.lasers.push({
+                            worldX: baseX - 6,
+                            y: baseY + offsetY,
+                            vx: wStyle.speed,
+                            vy: 0,
+                            color: wStyle.color,
+                            core: wStyle.core,
+                            shape: wStyle.shape,
+                            size: wStyle.size,
+                            life: 60
+                        });
+                    });
+                } else if (wStyle.pattern === 'spread') {
+                    [-1.6, 0, 1.6].forEach(vyVal => {
+                        this.world.lasers.push({
+                            worldX: baseX,
+                            y: baseY,
+                            vx: wStyle.speed,
+                            vy: vyVal,
+                            color: wStyle.color,
+                            core: wStyle.core,
+                            shape: wStyle.shape,
+                            size: wStyle.size,
+                            life: 60
+                        });
+                    });
+                } else if (wStyle.pattern === 'wave') {
+                    [-8, 8].forEach(offsetY => {
+                        this.world.lasers.push({
+                            worldX: baseX,
+                            y: baseY + offsetY,
+                            vx: wStyle.speed,
+                            vy: 0,
+                            wave: true,
+                            color: wStyle.color,
+                            core: wStyle.core,
+                            shape: wStyle.shape,
+                            size: wStyle.size,
+                            life: 60
+                        });
+                    });
+                }
+
+                this.ship.fireCooldown = 12;
+                AudioFX.laser(wStyle.level);
+            },
+
+            spawnExplosion(worldX, y, color, count = 12) {
+                for (let i = 0; i < count; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = Math.random() * 4 + 1;
+                    this.world.particles.push({
+                        worldX,
+                        y,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed,
+                        size: Math.random() * 4 + 2,
+                        color,
+                        life: 24 + Math.random() * 10
+                    });
+                }
+            },
+
+            addFloatingText(worldX, y, text, color = '#38bdf8') {
+                this.world.floatingTexts.push({
+                    worldX,
+                    y,
+                    text,
+                    color,
+                    life: 55
+                });
+            },
+
+            /* ----------------------------------------------------------------------
+               RENDERING VISUAL GALAKSI PADA CANVAS
+               ---------------------------------------------------------------------- */
+            renderWorld() {
+                const ctx = this.ctx;
+                const w = this.width;
+                const h = this.height;
+                const camX = this.world.cameraX;
+
+                // 1. Latar Belakang Gradien Galaksi
+                const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
+                bgGrad.addColorStop(0, '#040714');
+                bgGrad.addColorStop(0.5, '#090d24');
+                bgGrad.addColorStop(1, '#050816');
+                ctx.fillStyle = bgGrad;
+                ctx.fillRect(0, 0, w, h);
+
+                // 2. Nebula Bercahaya (Parallax Lambat)
+                this.world.nebulae.forEach(neb => {
+                    const screenX = ((neb.x - camX * 0.15) % (w + 600) + (w + 600)) % (w + 600) - 300;
+                    const radGrad = ctx.createRadialGradient(screenX, neb.y, 10, screenX, neb.y, neb.r);
+                    radGrad.addColorStop(0, neb.color);
+                    radGrad.addColorStop(1, 'rgba(0,0,0,0)');
+                    ctx.fillStyle = radGrad;
+                    ctx.beginPath();
+                    ctx.arc(screenX, neb.y, neb.r, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+
+                // 3. Bintang Bergerak (Parallax Berlapis)
+                this.world.stars.forEach(st => {
+                    const sx = ((st.x - camX * st.parallax) % w + w) % w;
+                    const sy = st.y % h;
+                    ctx.fillStyle = `rgba(224, 242, 254, ${st.alpha})`;
+                    ctx.beginPath();
+                    ctx.arc(sx, sy, st.size, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+
+                // 4. Planet Dekoratif
+                this.world.planets.forEach(pl => {
+                    const sx = pl.worldX - camX * 0.55;
+                    if (sx < -150 || sx > w + 150) return;
+                    const sy = pl.yRatio * h;
+                    const pGrad = ctx.createRadialGradient(sx - pl.r * 0.3, sy - pl.r * 0.3, pl.r * 0.1, sx, sy, pl.r);
+                    pGrad.addColorStop(0, pl.color1);
+                    pGrad.addColorStop(1, pl.color2);
+                    ctx.fillStyle = pGrad;
+                    ctx.beginPath();
+                    ctx.arc(sx, sy, pl.r, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    if (pl.ring) {
+                        ctx.strokeStyle = 'rgba(186, 230, 253, 0.35)';
+                        ctx.lineWidth = 5;
+                        ctx.beginPath();
+                        ctx.ellipse(sx, sy, pl.r * 1.55, pl.r * 0.35, -0.25, 0, Math.PI * 2);
+                        ctx.stroke();
+                    }
+                });
+
+                if (this.state === GAME_STATES.START) return;
+
+                // 5. Medan Gravitasi Visual
+                this.world.gravityZones.forEach(gz => {
+                    const sx = gz.worldX - camX;
+                    if (sx < -150 || sx > w + 150) return;
+                    const sy = gz.yRatio * h;
+                    ctx.save();
+                    ctx.translate(sx, sy);
+                    ctx.rotate(gz.angle);
+                    ctx.strokeStyle = 'rgba(168, 85, 247, 0.35)';
+                    ctx.lineWidth = 2;
+                    for (let r = 28; r <= gz.radius; r += 26) {
+                        ctx.beginPath();
+                        ctx.arc(0, 0, r, 0, Math.PI * 1.4);
+                        ctx.stroke();
+                    }
+                    ctx.restore();
+                });
+
+                // 6. Asteroid & Bebatuan Antariksa
+                this.world.asteroids.forEach(ast => {
+                    const sx = ast.worldX - camX;
+                    if (sx < -80 || sx > w + 80) return;
+                    ctx.save();
+                    ctx.translate(sx, ast.y);
+                    ctx.rotate(ast.rot);
+                    ctx.fillStyle = '#475569';
+                    ctx.strokeStyle = '#94a3b8';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    const sides = 7;
+                    for (let i = 0; i < sides; i++) {
+                        const ang = (i / sides) * Math.PI * 2;
+                        const rad = ast.radius * (i % 2 === 0 ? 1 : 0.82);
+                        const px = Math.cos(ang) * rad;
+                        const py = Math.sin(ang) * rad;
+                        if (i === 0) ctx.moveTo(px, py);
+                        else ctx.lineTo(px, py);
+                    }
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.restore();
+                });
+
+                // 7. Ranjau Luar Angkasa Fiktif
+                this.world.mines.forEach(m => {
+                    const sx = m.worldX - camX;
+                    if (sx < -60 || sx > w + 60) return;
+                    const sy = m.currentY || (m.baseYRatio * h);
+                    ctx.save();
+                    ctx.translate(sx, sy);
+                    ctx.fillStyle = '#881337';
+                    ctx.strokeStyle = '#fb7185';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, m.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                    // Duri ranjau
+                    for (let k = 0; k < 8; k++) {
+                        const a = (k / 8) * Math.PI * 2 + m.phase * 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(Math.cos(a) * m.radius, Math.sin(a) * m.radius);
+                        ctx.lineTo(Math.cos(a) * (m.radius + 8), Math.sin(a) * (m.radius + 8));
+                        ctx.stroke();
+                    }
+                    ctx.fillStyle = '#f43f5e';
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 6, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                });
+
+                // 8. 15 Kotak Misi Bercahaya
+                this.world.missionBoxes.forEach(box => {
+                    const sx = box.worldX - camX;
+                    if (sx < -100 || sx > w + 100) return;
+                    const sy = box.yRatio * h + Math.sin(box.pulse) * 7;
+
+                    ctx.save();
+                    ctx.translate(sx, sy);
+
+                    // Lingkaran Aura Kotak Misi
+                    const glowColor = box.completed
+                        ? (box.result === 'correct' ? 'rgba(52, 211, 153, 0.25)' : 'rgba(248, 113, 113, 0.25)')
+                        : 'rgba(56, 189, 248, 0.35)';
+                    ctx.fillStyle = glowColor;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, box.radius + 12, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Badan Kotak Misi
+                    ctx.fillStyle = box.completed ? '#1e293b' : '#0284c7';
+                    ctx.strokeStyle = box.completed
+                        ? (box.result === 'correct' ? '#34d399' : '#f87171')
+                        : '#fde047';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.roundRect(-26, -26, 52, 52, 10);
+                    ctx.fill();
+                    ctx.stroke();
+
+                    // Nomor / Simbol Misi
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold 14px Orbitron, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    const label = box.completed ? (box.result === 'correct' ? '✓' : '✕') : `?`;
+                    ctx.fillText(label, 0, -4);
+                    ctx.font = 'bold 10px Orbitron, sans-serif';
+                    ctx.fillStyle = '#fde047';
+                    ctx.fillText(`MISI ${box.index + 1}`, 0, 13);
+
+                    ctx.restore();
+                });
+
+                // 9. Gerbang Portal Finis di Ujung Lintasan
+                const portalScreenX = this.world.portalX - camX;
+                if (portalScreenX > -200 && portalScreenX < w + 200) {
+                    const allDone = Object.keys(this.session.answers).length >= 15;
+                    const py = h / 2;
+                    ctx.save();
+                    ctx.translate(portalScreenX, py);
+
+                    const pGrad = ctx.createRadialGradient(0, 0, 15, 0, 0, 135);
+                    pGrad.addColorStop(0, allDone ? 'rgba(52, 211, 153, 0.75)' : 'rgba(245, 158, 11, 0.45)');
+                    pGrad.addColorStop(0.6, allDone ? 'rgba(14, 165, 233, 0.4)' : 'rgba(124, 58, 237, 0.25)');
+                    pGrad.addColorStop(1, 'rgba(0,0,0,0)');
+                    ctx.fillStyle = pGrad;
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, 55, 135, 0, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.strokeStyle = allDone ? '#34d399' : '#f59e0b';
+                    ctx.lineWidth = 4;
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, 42, 115, 0, 0, Math.PI * 2);
+                    ctx.stroke();
+
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold 13px Orbitron, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(allDone ? 'PORTAL FINIS TERBUKA' : 'PORTAL FINIS (TERKUNCI)', 0, -135);
+                    ctx.restore();
+                }
+
+                // 10. Peluru Beragam (Warna & Bentuk Berbeda di Setiap Soal)
+                this.world.lasers.forEach(l => {
+                    const sx = l.worldX - camX;
+                    ctx.save();
+                    ctx.translate(sx, l.y);
+                    ctx.shadowColor = l.color || '#f43f5e';
+                    ctx.shadowBlur = 12;
+
+                    if (l.shape === 'orb') {
+                        ctx.fillStyle = l.color;
+                        ctx.beginPath();
+                        ctx.arc(0, 0, l.size || 6, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.fillStyle = l.core || '#ffffff';
+                        ctx.beginPath();
+                        ctx.arc(0, 0, (l.size || 6) * 0.45, 0, Math.PI * 2);
+                        ctx.fill();
+                    } else if (l.shape === 'diamond') {
+                        const sz = l.size || 6;
+                        ctx.fillStyle = l.color;
+                        ctx.beginPath();
+                        ctx.moveTo(sz * 1.6, 0);
+                        ctx.lineTo(0, -sz);
+                        ctx.lineTo(-sz * 1.6, 0);
+                        ctx.lineTo(0, sz);
+                        ctx.closePath();
+                        ctx.fill();
+                        ctx.fillStyle = l.core || '#ffffff';
+                        ctx.fillRect(-sz * 0.5, -1.5, sz, 3);
+                    } else {
+                        // Beam Laser memanjang
+                        ctx.fillStyle = l.color || '#f43f5e';
+                        ctx.beginPath();
+                        ctx.roundRect(-14, -(l.size || 4) / 2, 28, l.size || 4, 3);
+                        ctx.fill();
+                        ctx.fillStyle = l.core || '#ffffff';
+                        ctx.fillRect(-10, -1, 20, 2);
+                    }
+                    ctx.restore();
+                });
+
+                // 11. Partikel Ledakan & Mesin
+                this.world.particles.forEach(p => {
+                    const sx = p.worldX - camX;
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath();
+                    ctx.arc(sx, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+
+                // 12. Pesawat Tempur Militer Sukhoi Pemain
+                this.drawPlayerShip(this.ship.worldX - camX, this.ship.y);
+
+                // 13. Teks Informasi Melayang
+                this.world.floatingTexts.forEach(ft => {
+                    const sx = ft.worldX - camX;
+                    ctx.font = 'bold 13px Plus Jakarta Sans, sans-serif';
+                    ctx.fillStyle = ft.color;
+                    ctx.textAlign = 'center';
+                    ctx.fillText(ft.text, sx, ft.y);
+                });
+            },
+
+            drawPlayerShip(sx, sy) {
+                const ctx = this.ctx;
+                const weapon = this.getCurrentWeaponStyle();
+                ctx.save();
+                ctx.translate(sx, sy);
+
+                // Efek kemiringan halus saat bermanuver naik/turun
+                const tiltAngle = Math.max(-0.22, Math.min(0.22, this.ship.vy * 0.03));
+                ctx.rotate(tiltAngle);
+
+                // Efek Perisai Saat Menabrak Rintangan
+                if (this.ship.shieldFlash > 0) {
+                    ctx.strokeStyle = 'rgba(56, 189, 248, 0.9)';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, this.ship.radius + 14, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+
+                // 1. Dua Api Pendorong Mesin Kembar Sukhoi (Twin Afterburner)
+                const flameLen = 15 + Math.random() * 10;
+                [-7, 7].forEach(ny => {
+                    ctx.fillStyle = '#f97316';
+                    ctx.beginPath();
+                    ctx.moveTo(-30, ny - 3.5);
+                    ctx.lineTo(-30 - flameLen, ny);
+                    ctx.lineTo(-30, ny + 3.5);
+                    ctx.closePath();
+                    ctx.fill();
+
+                    ctx.fillStyle = '#fef08a';
+                    ctx.beginPath();
+                    ctx.moveTo(-30, ny - 1.8);
+                    ctx.lineTo(-30 - flameLen * 0.6, ny);
+                    ctx.lineTo(-30, ny + 1.8);
+                    ctx.closePath();
+                    ctx.fill();
+                });
+
+                // 2. Stabilizer Ekor Horizontal Belakang (Elevons)
+                ctx.fillStyle = '#334155';
+                ctx.strokeStyle = '#64748b';
+                ctx.lineWidth = 1.2;
+                ctx.beginPath();
+                ctx.moveTo(-24, -8);
+                ctx.lineTo(-36, -21);
+                ctx.lineTo(-22, -20);
+                ctx.lineTo(-14, -8);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(-24, 8);
+                ctx.lineTo(-36, 21);
+                ctx.lineTo(-22, 20);
+                ctx.lineTo(-14, 8);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                // 3. Sayap Utama Swept-Back Khas Jet Tempur Militer Sukhoi
+                ctx.fillStyle = '#1e293b';
+                ctx.strokeStyle = weapon.color;
+                ctx.lineWidth = 1.8;
+                ctx.beginPath();
+                ctx.moveTo(-14, -9);
+                ctx.lineTo(-24, -34);
+                ctx.lineTo(-6, -32);
+                ctx.lineTo(14, -8);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(-14, 9);
+                ctx.lineTo(-24, 34);
+                ctx.lineTo(-6, 32);
+                ctx.lineTo(14, 8);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                // Aksen Kamuflase Sayap Sukhoi
+                ctx.fillStyle = '#0284c7';
+                ctx.beginPath();
+                ctx.moveTo(-12, -14);
+                ctx.lineTo(-18, -28);
+                ctx.lineTo(-8, -27);
+                ctx.lineTo(4, -12);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.moveTo(-12, 14);
+                ctx.lineTo(-18, 28);
+                ctx.lineTo(-8, 27);
+                ctx.lineTo(4, 12);
+                ctx.closePath();
+                ctx.fill();
+
+                // 4. Canard Depan (Sayap Manuver Depan Sukhoi Su-35)
+                ctx.fillStyle = '#0f172a';
+                ctx.strokeStyle = '#38bdf8';
+                ctx.lineWidth = 1.2;
+                ctx.beginPath();
+                ctx.moveTo(12, -7);
+                ctx.lineTo(6, -18);
+                ctx.lineTo(15, -16);
+                ctx.lineTo(22, -6);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(12, 7);
+                ctx.lineTo(6, 18);
+                ctx.lineTo(15, 16);
+                ctx.lineTo(22, 6);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                // 5. Dua Nosel Mesin Jet & Fuselage Utama
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(-31, -10, 8, 6);
+                ctx.fillRect(-31, 4, 8, 6);
+
+                ctx.fillStyle = '#334155';
+                ctx.strokeStyle = '#e0f2fe';
+                ctx.lineWidth = 1.6;
+                ctx.beginPath();
+                ctx.moveTo(-26, -10);
+                ctx.lineTo(18, -8);
+                ctx.lineTo(44, 0); // Hidung Radome Lancip Sukhoi
+                ctx.lineTo(18, 8);
+                ctx.lineTo(-26, 10);
+                ctx.lineTo(-22, 0);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                // 6. Sirip Ekor Kembar (Twin Vertical Tail Fins)
+                ctx.fillStyle = '#0284c7';
+                ctx.fillRect(-24, -13, 14, 3);
+                ctx.fillRect(-24, 10, 14, 3);
+
+                // 7. Kanopi Kokpit & Rudal Wingtip Berwarna Sesuai Peluru Aktif
+                ctx.fillStyle = '#7dd3fc';
+                ctx.beginPath();
+                ctx.ellipse(10, 0, 11, 4.2, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = weapon.color;
+                ctx.fillRect(-25, -35, 18, 2.5);
+                ctx.fillRect(-25, 32.5, 18, 2.5);
+
+                ctx.restore();
+            },
+
+            /* ----------------------------------------------------------------------
+               SISTEM KEAMANAN, MODE LAYAR PENUH, DAN JEDA PERMAINAN
+               ---------------------------------------------------------------------- */
+            requestFullscreenSafe() {
+                const elem = document.documentElement;
+                try {
+                    if (elem.requestFullscreen) {
+                        elem.requestFullscreen().catch(() => {});
+                    } else if (elem.webkitRequestFullscreen) {
+                        elem.webkitRequestFullscreen();
+                    }
+                } catch (e) {
+                    // Abaikan jika diblokir oleh kebijakan iFrame/browser
+                }
+            },
+
+            toggleFullscreen() {
+                try {
+                    if (!document.fullscreenElement) {
+                        this.requestFullscreenSafe();
+                    } else if (document.exitFullscreen) {
+                        document.exitFullscreen().catch(() => {});
+                    }
+                } catch (e) {}
+            },
+
+            togglePause() {
+                if (this.state === GAME_STATES.PLAYING) {
+                    this.state = GAME_STATES.PAUSED;
+                    this.resetControlKeys();
+                    AudioFX.setBGMMode('quiz');
+                    document.getElementById('modal-pause').classList.remove('hidden');
+                } else if (this.state === GAME_STATES.PAUSED) {
+                    this.state = GAME_STATES.PLAYING;
+                    AudioFX.setBGMMode('action');
+                    document.getElementById('modal-pause').classList.add('hidden');
+                }
+            },
+
+            abortToStart() {
+                this.clearQuestionTimer();
+                this.resetControlKeys();
+                AudioFX.stopBGM();
+                document.getElementById('modal-pause').classList.add('hidden');
+                document.getElementById('modal-question').classList.add('hidden');
+                document.getElementById('hud-container').classList.add('hidden');
+                document.getElementById('touch-controls').classList.add('hidden');
+                document.getElementById('screen-start').classList.remove('hidden');
+                this.state = GAME_STATES.START;
+            },
+
+            setupSecurityMonitors() {
+                // 1. Deteksi Perpindahan Tab menggunakan Page Visibility API
+                document.addEventListener('visibilitychange', () => {
+                    const isActiveSession = [GAME_STATES.PLAYING, GAME_STATES.QUESTION, GAME_STATES.FEEDBACK, GAME_STATES.PAUSED].includes(this.state);
+                    if (document.hidden && isActiveSession) {
+                        this.triggerSecurityViolation(
+                            'PERINGATAN KEAMANAN! Anda terdeteksi meninggalkan halaman permainan (berpindah tab atau meminimalkan browser). Sesi sebelumnya dibatalkan dan skor menjadi 0. Silakan mulai kembali dari soal pertama.'
+                        );
+                    }
+                });
+
+                // 2. Deteksi Keluar dari Mode Layar Penuh (jika kebijakan ketat diaktifkan guru)
+                document.addEventListener('fullscreenchange', () => {
+                    const isActiveSession = [GAME_STATES.PLAYING, GAME_STATES.QUESTION, GAME_STATES.FEEDBACK].includes(this.state);
+                    if (!document.fullscreenElement && isActiveSession) {
+                        if (this.config.mode === 'assessment' && this.config.strictFullscreen) {
+                            this.triggerSecurityViolation(
+                                'PERINGATAN KEAMANAN! Anda keluar dari Mode Layar Penuh selama sesi penilaian berlangsung. Sesi dibatalkan dan skor direset menjadi 0.'
+                            );
+                        } else {
+                            this.addFloatingText(this.ship.worldX, this.ship.y - 45, '⚠️ Peringatan: Tetap gunakan Mode Layar Penuh!', '#f59e0b');
+                        }
+                    }
+                });
+
+                // 3. Pencegahan Copy, Cut, Paste pada area soal aktif
+                ['copy', 'cut', 'paste'].forEach(evtName => {
+                    window.addEventListener(evtName, (e) => {
+                        if (this.state === GAME_STATES.QUESTION || this.state === GAME_STATES.FEEDBACK) {
+                            e.preventDefault();
+                        }
+                    });
+                });
+            },
+
+            triggerSecurityViolation(message) {
+                if (this.state === GAME_STATES.SECURITY_VIOLATION || this.state === GAME_STATES.START) return;
+
+                this.clearQuestionTimer();
+                this.resetControlKeys();
+
+                // Pada Mode Latihan, cukup beri peringatan tanpa mengunci permanen
+                if (this.config.mode === 'practice') {
+                    this.addFloatingText(this.ship.worldX, this.ship.y - 50, '⚠️ Mode Latihan: Hindari berpindah tab saat bermain!', '#f59e0b');
+                    return;
+                }
+
+                this.state = GAME_STATES.SECURITY_VIOLATION;
+                this.session.score = 0;
+                this.session.answers = {};
+                AudioFX.stopBGM();
+                AudioFX.violation();
+                this.logSessionEvent('Pelanggaran Tab (Skor Reset 0)');
+
+                // Kunci murid pada Mode Penilaian hingga diotorisasi guru
+                try {
+                    const studentKey = this.getStudentKey(this.session.name, this.session.absen, this.session.className);
+                    const lockedList = JSON.parse(localStorage.getItem('pesawat_algoritma_locked_students') || '[]');
+                    if (!lockedList.includes(studentKey)) {
+                        lockedList.push(studentKey);
+                        localStorage.setItem('pesawat_algoritma_locked_students', JSON.stringify(lockedList));
+                    }
+                } catch (e) {}
+
+                document.getElementById('modal-question').classList.add('hidden');
+                document.getElementById('modal-pause').classList.add('hidden');
+                document.getElementById('violation-message').textContent = message;
+
+                const authBox = document.getElementById('violation-auth-box');
+                const unlockInput = document.getElementById('input-teacher-unlock');
+                const unlockErr = document.getElementById('unlock-error');
+                if (authBox) authBox.classList.remove('hidden');
+                if (unlockInput) unlockInput.value = '';
+                if (unlockErr) unlockErr.classList.add('hidden');
+
+                document.getElementById('modal-violation').classList.remove('hidden');
+            },
+
+            acknowledgeViolation() {
+                const unlockInput = document.getElementById('input-teacher-unlock');
+                const unlockErr = document.getElementById('unlock-error');
+
+                // Jika guru mengisi PIN otorisasi pada modal pelanggaran, buka kunci murid tersebut
+                if (unlockInput && unlockInput.value.trim() !== '') {
+                    if (unlockInput.value.trim() === this.config.teacherPin) {
+                        try {
+                            const studentKey = this.getStudentKey(this.session.name, this.session.absen, this.session.className);
+                            let lockedList = JSON.parse(localStorage.getItem('pesawat_algoritma_locked_students') || '[]');
+                            lockedList = lockedList.filter(k => k !== studentKey);
+                            localStorage.setItem('pesawat_algoritma_locked_students', JSON.stringify(lockedList));
+                        } catch (e) {}
+                    } else {
+                        if (unlockErr) unlockErr.classList.remove('hidden');
+                        AudioFX.wrong();
+                        return;
+                    }
+                }
+
+                document.getElementById('modal-violation').classList.add('hidden');
+                document.getElementById('hud-container').classList.add('hidden');
+                document.getElementById('touch-controls').classList.add('hidden');
+                document.getElementById('screen-start').classList.remove('hidden');
+                this.state = GAME_STATES.START;
+            },
+
+            /* ----------------------------------------------------------------------
+               GAME LOOP UTAMA
+               ---------------------------------------------------------------------- */
+            gameLoop() {
+                this.updateWorldPhysics();
+                this.renderWorld();
+                requestAnimationFrame(() => this.gameLoop());
+            }
+        };
+
+        // Jalankan Aplikasi saat halaman selesai dimuat
+        window.onload = function () {
+            GameApp.init();
+        };
+    </script>
+</body>
+</html>
